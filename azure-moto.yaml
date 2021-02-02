@@ -30,6 +30,14 @@ extension_services:
             autoPhonehome: false
             class: System
             hostname: '{{HOST_NAME}}.local'
+          external:
+            class: VLAN
+            interfaces:
+              - '1.1'
+          internal:
+            class: VLAN
+            interfaces:
+              - '1.2'
         async: true
         class: Device
         label: myBIG-IPdeclarationfordeclarativeonboarding
