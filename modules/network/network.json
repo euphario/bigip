@@ -44,10 +44,7 @@
         "input": {
           "name": "[concat('subnet', copyIndex('constructSubnetArray'))]",
           "properties": {
-            "addressPrefix": "[concat(parameters('vnetAddressPrefix'),'.0/24')]",
-            "routeTable": {
-              "id": "[resourceId('Microsoft.Network/routeTables', concat('routeTable-subnet', copyIndex('constructSubnetArray')))]"
-            }
+            "addressPrefix": "[concat(parameters('vnetAddressPrefix'),'.0/24')]"
           }
         },
         "name": "constructSubnetArray"
