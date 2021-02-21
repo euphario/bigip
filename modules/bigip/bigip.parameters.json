@@ -54,7 +54,7 @@
       "value": "OPTIONAL"
     },
     "customConfig": {
-        "value": "/usr/bin/curl https://raw.githubusercontent.com/euphario/bigip/main/bigip_merge.conf -o /var/tmp/bigip_merge.conf\n/usr/bin/tmsh load sys config merge file /var/tmp/bigip_merge.conf\n/usr/bin/tmsh save sys config\n"
+      "value": "/usr/bin/curl https://raw.githubusercontent.com/euphario/bigip/main/bigip_merge.conf -o /var/tmp/bigip_merge.conf\n/usr/bin/tmsh load sys config merge file /var/tmp/bigip_merge.conf\n/usr/bin/tmsh save sys config\n"
     },
     "restrictedSrcAddress": {
       "value": "*"
