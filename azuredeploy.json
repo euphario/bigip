@@ -16,6 +16,12 @@
       },
       "type": "string"
     },
+    "sshKey": {
+      "metadata": {
+        "description": "Supply ssh public key you wish to use to connect to big-ip."
+      },
+      "type": "string"
+    },
     "uniqueString": {
       "defaultValue": "",
       "metadata": {
@@ -295,14 +301,9 @@
           "uri": "[concat(parameters('templateBaseUrl'), parameters('artifactLocation'), 'modules/bigip/bigip.json')]",
           "contentVersion": "[variables('contentVersion')]"
         },
-        "parameters": {
-          "adminUsername": { "value": "[variables('adminUsername')]" },
-          "dnsLabel": { "value": "cx911-bigip1" },
-          "restrictedSrcAddress": { "value": "*" },
-          "bigIpVersion": { "value": "latest" },
-          "adminPasswordOrKey": { "value": "Ami5Run20" },
-          "imageName": { "value": "Best25Mbps" },
-          "tagValues": { "value": "[parameters('tagValues')]" }
+        "parametersLink": {
+          "uri": "[concat(parameters('templateBaseUrl'), parameters('artifactLocation'), 'modules/bigip/bigip.parameters.json')]",
+          "contentVersion": "[variables('contentVersion')]"
         }
       }
     }
