@@ -23,6 +23,12 @@
       },
       "type": "securestring"
     },
+    "sshKey": {
+      "metadata": {
+        "description": "Supply ssh public key you wish to use to connect to big-ip."
+      },
+      "type": "string"
+    },
     "dnsLabel": {
       "metadata": {
         "description": "Unique DNS Name for the Public IP address used to access the Virtual Machine."
@@ -291,12 +297,13 @@
     ],
     "location": "[resourceGroup().location]",
     "adminPasswordOrKey": "[replace(parameters('adminPasswordOrKey'),'\\n', '\n')]",
+    "sshKey": "[variables('sshKey')]",
     "linuxConfiguration": {
       "disablePasswordAuthentication": true,
       "ssh": {
         "publicKeys": [
           {
-            "keyData": "[variables('adminPasswordOrKey')]",
+            "keyData": "[variables('sshKey')]",
             "path": "[concat('/home/', parameters('adminUsername'), '/.ssh/authorized_keys')]"
           }
         ]

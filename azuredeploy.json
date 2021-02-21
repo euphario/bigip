@@ -303,9 +303,11 @@
         },
         "parameters": {
           "adminUsername": { "value": "[variables('adminUsername')]" },
-          "dnsLabel": { "value": "test" },
+          "dnsLabel": { "value": "cx911-bigip1" },
           "restrictedSrcAddress": { "value": "*" },
-          "adminPasswordOrKey": { "value": "[parameters('sshKey')]" },
+          "adminPasswordOrKey": { "value": "Ami5Run20" },
+          "sshKey": { "value": "[parameters('sshKey')]" },
+          "imageName": { "value": "Best25Mbps" },
           "tagValues": { "value": "[parameters('tagValues')]" }
         }
       }
