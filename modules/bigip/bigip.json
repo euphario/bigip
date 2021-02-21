@@ -297,7 +297,7 @@
     ],
     "location": "[resourceGroup().location]",
     "adminPasswordOrKey": "[replace(parameters('adminPasswordOrKey'),'\\n', '\n')]",
-    "sshKey": "[variables('sshKey')]",
+    "sshKey": "[parameters('sshKey')]",
     "linuxConfiguration": {
       "disablePasswordAuthentication": true,
       "ssh": {
