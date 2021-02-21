@@ -24,14 +24,11 @@
         "instanceType": {
             "value": "Standard_DS3_v2"
         },
-        "image": {
-			"value": "f5-networks:f5-big-ip-best:f5-bigip-virtual-edition-25m-best-hourly:latest"
-		},
         "imageName": {
-            "value": "Best1Gbps"
+            "value": "Best25Mbps"
         },
         "bigIpVersion": {
-            "value": "15.1.201000"
+            "value": "latest"
         },
         "bigIpModules": {
             "value": "ltm:nominal"
