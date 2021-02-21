@@ -311,10 +311,6 @@
       "type": "String",
       "value": "[variables('adminUsername')]"
     },
-    "vmssId": {
-      "type": "String",
-      "value": "[reference('bigipTemplate').outputs.vmssID.value]"
-    },
     "bigipUsername": {
       "type": "String",
       "value": "[variables('adminUsername')]"
