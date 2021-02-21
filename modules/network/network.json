@@ -56,7 +56,7 @@
     {
       "type": "Microsoft.Network/virtualNetworks",
       "apiVersion": "[variables('networkApiVersion')]",
-      "dependsOn": ["routeTableLoop"],
+      "dependsOn": [],
       "name": "[parameters('virtualNetworkName')]",
       "location": "[resourceGroup().location]",
       "tags": "[if(empty(parameters('tagValues')), json('null'), parameters('tagValues'))]",
