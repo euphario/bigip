@@ -12,6 +12,9 @@
         "adminPasswordOrKey": {
             "value": ""
         },
+        "sshKey": {
+			"value": ""
+		},
         "dnsLabel": {
             "value": ""
         },
