@@ -187,6 +187,11 @@
           "computerName": "[variables('vmName')]",
           "customData": "[base64(variables('cloudInit'))]"
         },
+        "diagnosticsProfile": {
+          "bootDiagnostics": {
+            "enabled": false
+          }
+        },
         "storageProfile": "[if(variables('useCustomImage'), variables('storageProfileArray').customImage, variables('storageProfileArray').platformImage)]"
       },
       "tags": "[if(empty(parameters('tagValues')), json('null'), parameters('tagValues'))]",
