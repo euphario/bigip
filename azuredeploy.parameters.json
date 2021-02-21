@@ -20,9 +20,6 @@
 		"newPassword": {
 			"value": "Ami5Run20"
 		},
-		"sshKey": {
-			"value": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDs/hpcxAGA1vifU4YU47nJy2eZNbyQn1zV0gJP1wzV8yma6iUMyi0FSQKn9MD5De4unr59hc1sxq8+/Y6+B570Z2+XLTAoaDATbgDIQi/n7UmIZ4Y0kqUaVzWTtNC/xgFWZFdzS3iZKY8FxLqWZXsR21AUX65NzS6ggpWVaiAYLIItqwnuo9+RgbgnlOf64FyeEu41mgip6PpfwAXWkhMsxofZtN6ASQgKwsMmJYBMBdCck9JOzgbt5NtvhZzFSJYR3qwTMl9YV2bL+fjrj8I0GzQwuNOYc2DFjFl3z2bDBXP4nHjGN73D2FliILZAjeRH+l/v3EvxtHy70P44Mi5F heloin@CHR-ML-HELOIN"	
-		},
 		"runtimeConfig": {
 			"value": "azure-moto.yaml"
 		},

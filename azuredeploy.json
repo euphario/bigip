@@ -30,12 +30,6 @@
       },
       "type": "string"
     },
-    "sshKey": {
-      "metadata": {
-        "description": "Supply the public key that will be used for SSH authentication to the BIG-IP and application virtual machines."
-      },
-      "type": "string"
-    },
     "newPassword": {
       "defaultValue": "",
       "metadata": {
@@ -305,8 +299,8 @@
           "adminUsername": { "value": "[variables('adminUsername')]" },
           "dnsLabel": { "value": "cx911-bigip1" },
           "restrictedSrcAddress": { "value": "*" },
+          "bigIpVersion": { "value": "latest" },
           "adminPasswordOrKey": { "value": "Ami5Run20" },
-          "sshKey": { "value": "[parameters('sshKey')]" },
           "imageName": { "value": "Best25Mbps" },
           "tagValues": { "value": "[parameters('tagValues')]" }
         }
