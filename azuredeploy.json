@@ -205,12 +205,7 @@
 					"customEmail":{ "value": "[variables('customEmail')]" },
 					"dnsLabel":{ "value": "[variables('uniqueString')]" },
 					"image":{ "value": "[variables('image')]" },
-					"inboundMgmtNatPoolID":{ "value": "[if(greater(variables('numberPublicMgmtIPAddresses'), 0), reference('dagTemplate').outputs.inboundMgmtNatPool.value, '')]" },
-					"inboundSshNatPoolID":{ "value": "[if(greater(variables('numberPublicMgmtIPAddresses'), 0), reference('dagTemplate').outputs.inboundSshNatPool.value, '')]" },
-					"instanceHealthProbeID":{ "value": "[reference('dagTemplate').outputs.externalLoadBalancerProbesID.value[0]]" },
 					"instanceType":{ "value": "[variables('instanceType')]" },
-					"loadBalancerBackendAddressPoolsArray":{ "value": [{ "id": "[reference('dagTemplate').outputs.externalBackEndLoadBalancerID.value]" }] },
-					"nsgID":{ "value": "[reference('dagTemplate').outputs.nsg0Id.value]" },
 					"provisionPublicIP":{ "value": "[variables('provisionPublicIPBigip')]" },
 					"roleDefinitionId":{ "value": "[variables('roleDefinitionId')]" },
 					"runtimeConfig":{ "value": "[parameters('runtimeConfig')]" },
@@ -242,11 +237,6 @@
 			"condition": "[variables('provisionApp')]",
             "type": "String",
             "value": "[variables('appInstanceName')]"
-        },
-		"appPublicIps": {
-			"condition": "[variables('provisionApp')]",
-            "type": "array",
-            "value": "[reference('dagTemplate').outputs.externalIps.value]"
         },
 		"appPrivateIp": {
 			"condition": "[variables('provisionApp')]",

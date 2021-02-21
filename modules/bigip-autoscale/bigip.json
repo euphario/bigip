@@ -411,7 +411,6 @@
       "apiVersion": "[variables('computeApiVersion')]",
       "dependsOn": [
         "[variables('deploymentScript')]",
-        "[variables('diagnosticsStorageAccountName')]"
       ],
       "identity": "[if(and(empty(parameters('userAssignManagedIdentity')), empty(parameters('roleDefinitionId'))), json('null'), variables('identity'))]",
       "location": "[resourceGroup().location]",
@@ -480,14 +479,12 @@
           "storageProfile": "[if(variables('useCustomImage'), variables('storageProfileArray').customImage, variables('storageProfileArray').platformImage)]",
           "diagnosticsProfile": {
             "bootDiagnostics": {
-              "enabled": true,
-              "storageUri": "[concat('https://', variables('diagnosticsStorageAccountName'), '.blob.core.windows.net')]"
+              "enabled": false,
             }
           }
         }
       },
       "sku": {
-        "capacity": "[parameters('vmScaleSetMinCount')]",
         "name": "[parameters('instanceType')]",
         "tier": "Standard"
       },
