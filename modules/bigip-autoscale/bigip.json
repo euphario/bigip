@@ -492,58 +492,8 @@
         "tier": "Standard"
       },
       "tags": "[if(empty(parameters('tagValues')), json('null'), parameters('tagValues'))]",
-      "type": "Microsoft.Compute/virtualMachineScaleSets",
+      "type": "Microsoft.Compute/virtualMachines",
       "zones": "[if(parameters('useAvailabilityZones'), createArray(1, 2, 3), json('null'))]"
-    },
-    {
-      "apiVersion": "[variables('storageApiVersion')]",
-      "kind": "Storage",
-      "location": "[resourceGroup().location]",
-      "name": "[variables('diagnosticsStorageAccountName')]",
-      "properties": {
-        "supportsHttpsTrafficOnly": true
-      },
-      "sku": {
-        "name": "Standard_LRS",
-        "tier": "Standard"
-      },
-      "tags": "[if(empty(parameters('tagValues')), json('null'), parameters('tagValues'))]",
-      "type": "Microsoft.Storage/storageAccounts"
-    },
-    {
-      "apiVersion": "[variables('appInsightsApiVersion')]",
-      "dependsOn": [
-        "[variables('vmssId')]"
-      ],
-      "location": "[resourceGroup().location]",
-      "name": "[concat(parameters('dnsLabel'), '-autoscaleconfig')]",
-      "properties": {
-        "enabled": true,
-        "name": "[concat(parameters('dnsLabel'), '-autoscaleconfig')]",
-        "notifications": [
-          {
-            "email": {
-              "customEmails": "[parameters('customEmail')]",
-              "sendToSubscriptionAdministrator": false,
-              "sendToSubscriptionCoAdministrators": false
-            },
-            "operation": "Scale"
-          }
-        ],
-        "profiles": [
-          {
-            "capacity": {
-              "default": "[parameters('vmScaleSetMinCount')]",
-              "maximum": "[parameters('vmScaleSetMaxCount')]",
-              "minimum": "[parameters('vmScaleSetMinCount')]"
-            },
-            "name": "Profile1",
-            "rules": "[if(empty(parameters('customAutoscaleRules')), variables('autoscaleRules'), parameters('customAutoscaleRules'))]"
-          }
-        ],
-        "targetResourceUri": "[variables('vmssId')]"
-      },
-      "type": "Microsoft.Insights/autoscaleSettings"
     },
     {
       "apiVersion": "[variables('appInsightsComponentsApiVersion')]",
@@ -620,13 +570,9 @@
       "type": "string",
       "value": "[concat('/subscriptions/',subscription().subscriptionId, '/resourcegroups/',  resourceGroup().name, '/providers/Microsoft.Authorization/roleAssignments/', guid(resourceGroup().id, 'roleId'))]"
     },
-    "autoscaleSettingsID": {
-      "type": "string",
-      "value": "[concat('/subscriptions/',subscription().subscriptionId, '/resourceGroups/',  resourceGroup().name, '/providers/microsoft.insights/autoscalesettings/', concat(parameters('dnsLabel'), '-autoscaleconfig'))]"
-    },
     "vmssID": {
       "type": "string",
-      "value": "[concat('/subscriptions/',subscription().subscriptionId, '/resourceGroups/',  resourceGroup().name, '/providers/Microsoft.Compute/virtualMachineScaleSets/', parameters('vmssName'))]"
+      "value": "[concat('/subscriptions/',subscription().subscriptionId, '/resourceGroups/',  resourceGroup().name, '/providers/Microsoft.Compute/virtualMachines/', parameters('vmssName'))]"
     }
   }
 }
