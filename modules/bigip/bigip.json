@@ -212,6 +212,13 @@
       },
       "type": "string"
     },
+    "customConfig": {
+      "defaultValue": "### START (INPUT) CUSTOM CONFIGURATION HERE\ntmsh save sys config\n",
+      "metadata": {
+        "description": "Execute a script post deployment of the BIG-IP"
+      },
+      "type": "string"
+    }, 
     "restrictedSrcAddress": {
       "metadata": {
         "description": "This field restricts management access to a specific network or address. Enter an IP address or address range in CIDR notation, or asterisk for all sources"
@@ -480,7 +487,7 @@
     "newDataStorageAccountName": "[concat(uniqueString(variables('dnsLabel'), resourceGroup().id, deployment().name), 'data000')]",
     "dataStorageAccountType": "Standard_LRS",
     "deploymentId": "[concat(variables('subscriptionId'), resourceGroup().id, deployment().name, variables('dnsLabel'))]",
-    "customConfig": "### START (INPUT) CUSTOM CONFIGURATION HERE\ntmsh save sys config\n",
+    "customConfig": "[parameters('customConfig')]",
     "allowUsageAnalytics": {
       "No": {
         "hashCmd": "echo AllowUsageAnalytics:No",
