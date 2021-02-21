@@ -257,19 +257,7 @@
     "useCustomImage": "[not(empty(variables('customImage')))]",
     "createNewCustomImage": "[contains(variables('customImage'), 'https://')]",
     "newCustomImageName": "[concat(variables('dnsLabel'), 'image')]",
-        "image": "[if(variables('useCustomImage'), parameters('image'), split(parameters('image'), ':'))]",
-    "imagePlan": {
-      "name": "[variables('skuToUse')]",
-      "product": "[variables('offerToUse')]",
-      "publisher": "f5-networks"
-    },
-    "imageReference": {
-      "offer": "[variables('offerToUse')]",
-      "publisher": "f5-networks",
-      "sku": "[variables('skuToUse')]",
-      "version": "[variables('versionToUse')]"
-    },
-
+    "image": "[if(variables('useCustomImage'), parameters('image'), split(parameters('image'), ':'))]",
     "storageProfileArray": {
       "customImage": {
         "imageReference": {
