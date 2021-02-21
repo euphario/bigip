@@ -11,6 +11,9 @@
 		"uniqueString": {
 			"value": "cx911"
 		},
+		"instanceType": {
+			"value": "Standard_DS2_v2"
+		},
 		"appContainer": {
 			"value": ""
 		},
