@@ -157,6 +157,13 @@
       },
       "type": "string"
     },
+    "image": {
+      "defaultValue": "f5-networks:f5-big-ip-best:f5-bigip-virtual-edition-25m-best-hourly:15.1.200000",
+      "metadata": {
+        "description": "2 formats accepted. URN of the image to use in Azure marketplace or id of custom image. Example URN value: f5-networks:f5-big-ip-byol:f5-big-ltm-2slot-byol:15.1.002000. You can find the URNs of F5 marketplace images in the README for this template or by running the command: az vm image list --output yaml --publisher f5-networks --all. See https://clouddocs.f5.com/cloud/public/v1/azure/Azure_download.html for information on creating custom bigip image."
+      },
+      "type": "string"
+    },
     "bigIpModules": {
       "defaultValue": "ltm:nominal",
       "metadata": {
@@ -250,10 +257,23 @@
     "useCustomImage": "[not(empty(variables('customImage')))]",
     "createNewCustomImage": "[contains(variables('customImage'), 'https://')]",
     "newCustomImageName": "[concat(variables('dnsLabel'), 'image')]",
+        "image": "[if(variables('useCustomImage'), parameters('image'), split(parameters('image'), ':'))]",
+    "imagePlan": {
+      "name": "[variables('skuToUse')]",
+      "product": "[variables('offerToUse')]",
+      "publisher": "f5-networks"
+    },
+    "imageReference": {
+      "offer": "[variables('offerToUse')]",
+      "publisher": "f5-networks",
+      "sku": "[variables('skuToUse')]",
+      "version": "[variables('versionToUse')]"
+    },
+
     "storageProfileArray": {
       "customImage": {
         "imageReference": {
-          "id": "[if(variables('createNewCustomImage'), resourceId('Microsoft.Compute/images', variables('newCustomImageName')), variables('customImage'))]"
+          "id": "[variables('image')]"
         }
       },
       "platformImage": {

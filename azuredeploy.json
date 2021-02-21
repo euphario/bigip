@@ -303,13 +303,9 @@
         },
         "parameters": {
           "adminUsername": { "value": "[variables('adminUsername')]" },
-          "image": { "value": "[variables('image')]" },
-          "instanceType": { "value": "[parameters('instanceType')]" },
-          "runtimeConfig": { "value": "[parameters('runtimeConfig')]" },
-          "sshKey": { "value": "[parameters('sshKey')]" },
-          "subnetId": {
-            "value": "[reference('networkTemplate').outputs.subnets.value[0]]"
-          },
+          "dnsLabel": { "value": "test" },
+          "restrictedSrcAddress": { "value": "*" },
+          "adminPasswordOrKey": { "value": "[parameters('sshKey')]" },
           "tagValues": { "value": "[parameters('tagValues')]" }
         }
       }
