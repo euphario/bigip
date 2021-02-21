@@ -298,7 +298,7 @@
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[concat(parameters('templateBaseUrl'), parameters('artifactLocation'), 'modules/application/application.json')]",
+          "uri": "[concat(parameters('templateBaseUrl'), parameters('artifactLocation'), 'modules/bigip/bigip.json')]",
           "contentVersion": "[variables('contentVersion')]"
         },
         "parameters": {
