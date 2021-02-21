@@ -194,12 +194,11 @@
 			"properties": {
 				"mode": "Incremental",
 				"templateLink": {
-					"uri": "[concat(parameters('templateBaseUrl'), parameters('artifactLocation'), 'modules/bigip-autoscale/bigip.json')]",
+					"uri": "[concat(parameters('templateBaseUrl'), parameters('artifactLocation'), 'modules/application/application.json')]",
 					"contentVersion": "[variables('contentVersion')]"
 				},
 				"parameters": {
 					"adminUsername":{ "value": "[variables('adminUsername')]" },
-					"appInsights":{ "value": "[variables('appInsights')]" },
 					"cpuMetricName":{ "value": "[variables('cpuMetricName')]" },
 					"customAutoscaleRules":{ "value": "[variables('customAutoscaleRules')]" },
 					"customEmail":{ "value": "[variables('customEmail')]" },
