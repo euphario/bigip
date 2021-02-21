@@ -362,7 +362,7 @@
         "id": "[parameters('inboundSshNatPoolID')]"
       }
     ],
-    "metricResourceUri": "[concat('/subscriptions/',subscription().subscriptionId, '/resourceGroups/',  resourceGroup().name, '/providers/Microsoft.Compute/virtualMachineScaleSets/', parameters('vmssName'))]",
+    "metricResourceUri": "[concat('/subscriptions/',subscription().subscriptionId, '/resourceGroups/', 'bigip1')]",
     "networkSecurityGroup": {
       "id": "[parameters('nsgID')]"
     },
@@ -404,7 +404,7 @@
     "useInboundMgmtNatPool": "[if(contains(tolower(parameters('inboundMgmtNatPoolID')), 'inboundnatpools'), variables('inboundMgmtNatPool'), parameters('inboundMgmtNatPoolID'))]",
     "useInboundSshNatPool": "[if(contains(tolower(parameters('inboundSshNatPoolID')), 'inboundnatpools'), variables('inboundSshNatPool'), parameters('inboundSshNatPoolID'))]",
     "versionToUse": "[if(variables('useCustomImage'), json('null'), variables('image')[3])]",
-    "vmssId": "[resourceId('Microsoft.Compute/virtualMachineScaleSets', parameters('vmssName'))]"
+    "vmssId": "[resourceId('Microsoft.Compute/virtualMachines', parameters('vmssName'))]"
   },
   "resources": [
     {
