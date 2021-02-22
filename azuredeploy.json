@@ -122,7 +122,10 @@
         "sourceAddressPrefix": "[parameters('restrictedSrcAddress')]"
       }
     ],
-    "nsg2": []
+    "nsg2": [      {
+        "destinationPortRanges": ["5060", "5061"],
+        "sourceAddressPrefix": "[parameters('restrictedSrcAddress')]"
+      }]
   },
   "resources": [
     {

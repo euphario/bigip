@@ -97,10 +97,10 @@
         "input": {
           "name": "[concat('subnet', copyIndex('constructSubnetArray'))]",
           "properties": {
-            "addressPrefix": "[concat(parameters('vnetAddressPrefix'), '.', copyIndex('constructSubnetArray'),'.0/24')]"
-          },
-          "networkSecurityGroup": {
-            "id": "[if(greater(variables('nsgArray')[copyIndex('constructSubnetArray')],0),resourceId('Microsoft.Network/networkSecurityGroups/',concat(parameters('uniqueString'),'-nsg', copyIndex('constructSubnetArray'))), json('null'))]"
+            "addressPrefix": "[concat(parameters('vnetAddressPrefix'), '.', copyIndex('constructSubnetArray'),'.0/24')]",
+            "networkSecurityGroup": {
+              "id": "[if(greater(variables('nsgArray')[copyIndex('constructSubnetArray')],0),resourceId('Microsoft.Network/networkSecurityGroups/',concat(parameters('uniqueString'),'-nsg', copyIndex('constructSubnetArray'))), json('null'))]"
+            }
           }
         },
         "name": "constructSubnetArray"
