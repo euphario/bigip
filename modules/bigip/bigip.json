@@ -275,6 +275,13 @@
       },
       "type": "string"
     },
+    "kubernetesSubnet": {
+      "defaultValue": "",
+      "metadata": {
+        "description": "subnet of the SIP Kubernetes cluster"
+      },
+      "type": "string"
+    },
     "tcpCluster": {
       "defaultValue": "10.240.0.245:25060",
       "metadata": {
@@ -437,6 +444,7 @@
     "vnetAddressPrefix": "[concat(parameters('vnetAddressPrefix'),'.0.0/16')]",
     "mgmtSubnetPrefix": "[concat(parameters('vnetAddressPrefix'), '.1.0/24')]",
     "tmmRouteGw": "[concat(parameters('vnetAddressPrefix'), '.2.1')]",
+    "tmmK8Gw": "[concat(parameters('vnetAddressPrefix'), '.3.1')]",
     "extSubnetPrefix": "[concat(parameters('vnetAddressPrefix'), '.2.0/24')]",
     "intSubnetPrefix": "[concat(parameters('vnetAddressPrefix'), '.3.0/24')]",
     "numberOfExternalIps": "[parameters('numberOfExternalIps')]",
@@ -564,7 +572,7 @@
         "linuxConfiguration": "[variables('linuxConfiguration')]"
       }
     },
-    "vsIPAddress": "[concat(parameters('vnetAddressPrefix'), '.1.', add(parameters('instanceIndex'), 100))]",
+    "vsIPAddress": "[concat(parameters('vnetAddressPrefix'), '.2.', add(parameters('instanceIndex'), 100))]",
     "cc1": "[concat('/usr/bin/curl ', parameters('linkForBIGIPConfig'), ' -o /var/tmp/bigip_merge.conf\n')]",
     "cc2": "[concat('/usr/bin/tmsh install sys crypto cert bigipAsServer from-url ', parameters('bigipAsServerCert'), '\n')]",
     "cc3": "[concat('/usr/bin/tmsh install sys crypto key bigipAsServer from-url ', parameters('bigipAsServerKey'), '\n')]",
@@ -575,8 +583,8 @@
     "cc8": "/usr/bin/tmsh load sys config merge file /var/tmp/bigip_merge.conf\n",
     "cc9": "[concat('/usr/bin/tmsh modify ltm pool /Common/sip-servers-tcp members replace-all-with { sip-transport-tcp.svc.cluster.local:', split(parameters('tcpCluster'), ':')[1], ' { address ', split(parameters('tcpCluster'), ':')[0], ' } }\n')]",
     "cc10": "[concat('/usr/bin/tmsh modify ltm pool /Common/sip-servers-udp members replace-all-with { sip-transport-udp.svc.cluster.local:', split(parameters('udpCluster'), ':')[1], ' { address ', split(parameters('udpCluster'), ':')[0], ' } }\n')]",
-    "cc11": "[concat('/usr/bin/tmsh modify ltm snatpool /Common/tcp-snat-pool members replace-all-with { ', concat(parameters('vnetAddressPrefix'), '.2.', mul(add(parameters('instanceIndex'), 1), 10), ' }\n'))]",
-    "cc12": "[concat('/usr/bin/tmsh modify ltm snatpool /Common/udp-snat-pool members replace-all-with { ', concat(parameters('vnetAddressPrefix'), '.2.', add(mul(add(parameters('instanceIndex'), 1), 10), 1), ' }\n'))]",
+    "cc11": "[concat('/usr/bin/tmsh modify ltm snatpool /Common/tcp-snat-pool members replace-all-with { ', concat(parameters('vnetAddressPrefix'), '.3.', mul(add(parameters('instanceIndex'), 1), 10), ' }\n'))]",
+    "cc12": "[concat('/usr/bin/tmsh modify ltm snatpool /Common/udp-snat-pool members replace-all-with { ', concat(parameters('vnetAddressPrefix'), '.3.', add(mul(add(parameters('instanceIndex'), 1), 10), 1), ' }\n'))]",
     "cc13": "[concat('/usr/bin/tmsh modify ltm virtual /Common/vs-clientside-initiated-flow destination ', variables('vsIPAddress'), ':5060\n')]",
     "cc14": "[concat('/usr/bin/tmsh modify ltm virtual /Common/vs-clientside-initiated-flow-tls destination ', variables('vsIPAddress'), ':5061\n')]",
     "cc15": "[concat('/usr/bin/tmsh modify ltm virtual /Common/vs-clientside-initiated-flow-udp destination ', variables('vsIPAddress'), ':5060\n')]",
@@ -585,8 +593,9 @@
     "cc18": "[concat('/usr/bin/tmsh modify ltm virtual /Common/vs-serverside-directed-flow-tls destination ', variables('extSubnetPrivateAddress'), ':5061\n')]",
     "cc19": "[concat('/usr/bin/tmsh modify ltm virtual /Common/vs-serverside-directed-flow-udp destination ', variables('extSubnetPrivateAddress'), ':5060\n')]",
     "cc20": "[concat('/usr/bin/tmsh modify ltm virtual /Common/vs-serverside-directed-flow-udp-tls destination ', variables('extSubnetPrivateAddress'), ':5061\n')]",
-    "cc21": "/usr/bin/tmsh save sys config\n",
-    "customConfig": "[concat(variables('cc1'), variables('cc2'), variables('cc3'), variables('cc4'), variables('cc5'), variables('cc6'), variables('cc7'), variables('cc8'), variables('cc9'), variables('cc10'), variables('cc11'), variables('cc12'), variables('cc13'), variables('cc14'), variables('cc15'), variables('cc16'), variables('cc17'), variables('cc18'), variables('cc19'), variables('cc20'), variables('cc21'))]",
+    "cc21": "[concat('/usr/bin/tmsh create net route toK8S network ', parameters('kubernetesSubnet'), ' gw ', variables('tmmK8Gw'))]",
+    "cc22": "/usr/bin/tmsh save sys config\n",
+    "customConfig": "[concat(variables('cc1'), variables('cc2'), variables('cc3'), variables('cc4'), variables('cc5'), variables('cc6'), variables('cc7'), variables('cc8'), variables('cc9'), variables('cc10'), variables('cc11'), variables('cc12'), variables('cc13'), variables('cc14'), variables('cc15'), variables('cc16'), variables('cc17'), variables('cc18'), variables('cc19'), variables('cc20'), variables('cc21'), variables('cc22'))]",
     "installCustomConfig": "[concat(variables('singleQuote'), '#!/bin/bash\n', variables('customConfig'), variables('singleQuote'))]"
   },
   "resources": [

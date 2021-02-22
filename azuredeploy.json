@@ -50,6 +50,13 @@
       },
       "type": "securestring"
     },
+    "kubernetesSubnet": {
+      "defaultValue": "10.240.0.0/16",
+      "metadata": {
+        "description": "subnet of the SIP Kubernetes cluster"
+      },
+      "type": "string"
+    },
     "restrictedSrcMgmtAddress": {
       "defaultValue": "*",
       "metadata": {
@@ -284,6 +291,8 @@
           "bigipAsServerCert": { "value": "[parameters('bigipAsServerCert')]" },
           "bigipAsServerKey": { "value": "[parameters('bigipAsServerKey')]" },
           "serverCA": { "value": "[parameters('serverCA')]" },
+          "kubernetesSubnet": { "value": "[parameters('kubernetesSubnet')]" },
+
           "linkForBIGIPConfig": {
             "value": "[parameters('linkForBIGIPConfig')]"
           },
