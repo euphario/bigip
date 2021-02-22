@@ -102,8 +102,6 @@
     "keyVaultPermissionsSecrets": ["get", "list"],
     "secretName": "mySecret",
     "userAssignedIdentityName": "[concat(variables('uniqueString'), '-secretIdentity')]",
-
-    "numSubnets": 3,
     "virtualNetworkName": "[concat(variables('uniqueString'), '-vnet')]",
     "vnetAddressPrefix": "[parameters('vnetAddressPrefix')]",
     "bigipCustomCommand1": "/usr/bin/curl https://raw.githubusercontent.com/euphario/bigip/main/bigip_merge.conf -o /var/tmp/bigip_merge.conf\n",
@@ -122,10 +120,7 @@
         "sourceAddressPrefix": "[parameters('restrictedSrcAddress')]"
       }
     ],
-    "nsg2": [      {
-        "destinationPortRanges": ["*"],
-        "sourceAddressPrefix": ["*"]
-      }]
+    "nsg2": []
   },
   "resources": [
     {
@@ -178,7 +173,7 @@
           "contentVersion": "[variables('contentVersion')]"
         },
         "parameters": {
-          "numSubnets": { "value": "[variables('numSubnets')]" },
+          "numSubnets": { "value": 3 },
           "virtualNetworkName": {
             "value": "[variables('virtualNetworkName')]"
           },
