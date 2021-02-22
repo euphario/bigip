@@ -99,12 +99,10 @@
     "numSubnets": 3,
     "virtualNetworkName": "[concat(variables('uniqueString'), '-vnet')]",
     "vnetAddressPrefix": "[parameters('vnetAddressPrefix')]",
-    "bigipCustomCommands": [
-      "/usr/bin/curl https://raw.githubusercontent.com/euphario/bigip/main/bigip_merge.conf -o /var/tmp/bigip_merge.conf\n",
-      "/usr/bin/tmsh load sys config merge file /var/tmp/bigip_merge.conf\n",
-      "/usr/bin/tmsh save sys config\n"
-    ],
-    "customConfig": "[concat(variables('bigipCustomCommands'))]",
+    "bigipCustomCommand1": "/usr/bin/curl https://raw.githubusercontent.com/euphario/bigip/main/bigip_merge.conf -o /var/tmp/bigip_merge.conf\n",
+    "bigipCustomCommand2": "/usr/bin/tmsh load sys config merge file /var/tmp/bigip_merge.conf\n",
+    "bigipCustomCommand3": "/usr/bin/tmsh save sys config\n",
+    "customConfig": "[concat(variables('bigipCustomCommand1'), variables('bigipCustomCommand2'), variables('bigipCustomCommand3'))]",
     "nsg0": [
       {
         "destinationPortRanges": ["22", "8443"],
