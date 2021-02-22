@@ -205,6 +205,9 @@
           "instanceName": {
             "value": "[concat(parameters('uniqueString'), '-', parameters('bigipPrefix'), '01')]"
           },
+          "uniqueString": {
+            "value": "[parameters('uniqueString')]"
+          },
           "vnetAddressPrefix": { "value": "[variables('vnetAddressPrefix')]" },
           "tagValues": { "value": "[parameters('tagValues')]" },
           "customConfig": { "value": "[variables('customConfig')]" }

@@ -42,6 +42,13 @@
       },
       "type": "string"
     },
+    "uniqueString": {
+      "defaultValue": "",
+      "metadata": {
+        "description": "A prefix that will be used to name template resources. Because some resources require globally unique names, we recommend using a unique value."
+      },
+      "type": "string"
+    },
     "numberOfExternalIps": {
       "allowedValues": [
         0,
@@ -256,7 +263,7 @@
     "customImage": "[replace(parameters('customImage'), 'OPTIONAL', '')]",
     "useCustomImage": "[not(empty(variables('customImage')))]",
     "createNewCustomImage": "[contains(variables('customImage'), 'https://')]",
-    "newCustomImageName": "[concat(variables('dnsLabel'), 'image')]",
+    "newCustomImageName": "[concat(variables('instanceName'), 'image')]",
     "storageProfileArray": {
       "customImage": {
         "imageReference": {
@@ -337,26 +344,26 @@
     },
     "bigIpMgmtPort": "443",
     "instanceName": "[toLower(parameters('instanceName'))]",
-    "virtualNetworkName": "[concat(variables('dnsLabel'), '-vnet')]",
-    "mgmtSubnetName": "mgmt",
+    "virtualNetworkName": "[concat(parameters('uniqueString'), '-vnet')]",
+    "mgmtSubnetName": "subnet0",
     "vnetId": "[resourceId('Microsoft.Network/virtualNetworks', variables('virtualNetworkName'))]",
     "mgmtSubnetPrivateAddress": "[concat(parameters('vnetAddressPrefix'), '.1.4')]",
     "commandArgs": "[concat('-o ', parameters('declarationUrl'), ' -u svc_user')]",
     "appScript": "IyEvYmluL2Jhc2gKZnVuY3Rpb24gcGFzc3dkKCkgewogIGVjaG8gfCBmNS1yZXN0LW5vZGUgL2NvbmZpZy9jbG91ZC9henVyZS9ub2RlX21vZHVsZXMvQGY1ZGV2Y2VudHJhbC9mNS1jbG91ZC1saWJzL3NjcmlwdHMvZGVjcnlwdERhdGFGcm9tRmlsZS5qcyAtLWRhdGEtZmlsZSAvY29uZmlnL2Nsb3VkLy5wYXNzd2QgfCBhd2sgJ3twcmludCAkMX0nCn0KCndoaWxlIGdldG9wdHMgbzp1OiBvcHRpb24KZG8gY2FzZSAiJG9wdGlvbiIgIGluCiAgICAgICAgbykgZGVjbGFyYXRpb25Vcmw9JE9QVEFSRzs7CiAgICAgICAgdSkgdXNlcj0kT1BUQVJHOzsKICAgIGVzYWMKZG9uZQoKZGVwbG95ZWQ9Im5vIgpmaWxlX2xvYz0iL2NvbmZpZy9jbG91ZC9jdXN0b21fY29uZmlnIgpkZmxfbWdtdF9wb3J0PWB0bXNoIGxpc3Qgc3lzIGh0dHBkIHNzbC1wb3J0IHwgZ3JlcCBzc2wtcG9ydCB8IHNlZCAncy9zc2wtcG9ydCAvLztzLyAvL2cnYAp1cmxfcmVnZXg9IihodHRwOlwvXC98aHR0cHM6XC9cLyk/W2EtejAtOV0rKFtcLVwuXXsxfVthLXowLTldKykqXC5bYS16XXsyLDV9KDpbMC05XXsxLDV9KT8oXC8uKik/JCIKCmlmIFtbICRkZWNsYXJhdGlvblVybCA9fiAkdXJsX3JlZ2V4IF1dOyB0aGVuCiAgICByZXNwb25zZV9jb2RlPSQoL3Vzci9iaW4vY3VybCAtc2sgLXcgIiV7aHR0cF9jb2RlfSIgJGRlY2xhcmF0aW9uVXJsIC1vICRmaWxlX2xvYykKICAgIGlmIFtbICRyZXNwb25zZV9jb2RlID09IDIwMCBdXTsgdGhlbgogICAgICAgICBlY2hvICJDdXN0b20gY29uZmlnIGRvd25sb2FkIGNvbXBsZXRlOyBjaGVja2luZyBmb3IgdmFsaWQgSlNPTi4iCiAgICAgICAgIGNhdCAkZmlsZV9sb2MgfCBqcSAuY2xhc3MKICAgICAgICAgaWYgW1sgJD8gPT0gMCBdXTsgdGhlbgogICAgICAgICAgICAgcmVzcG9uc2VfY29kZT0kKC91c3IvYmluL2N1cmwgLXNrdnZ1ICR1c2VyOiQocGFzc3dkKSAtdyAiJXtodHRwX2NvZGV9IiAtWCBQT1NUIC1IICJDb250ZW50LVR5cGU6IGFwcGxpY2F0aW9uL2pzb24iIC1IICJFeHBlY3Q6IiBodHRwczovL2xvY2FsaG9zdDokZGZsX21nbXRfcG9ydC9tZ210L3NoYXJlZC9hcHBzdmNzL2RlY2xhcmUgLWQgQCRmaWxlX2xvYyAtbyAvZGV2L251bGwpCgogICAgICAgICAgICAgaWYgW1sgJHJlc3BvbnNlX2NvZGUgPT0gMjAwIHx8ICRyZXNwb25zZV9jb2RlID09IDUwMiBdXTsgdGhlbgogICAgICAgICAgICAgICAgICBlY2hvICJEZXBsb3ltZW50IG9mIGFwcGxpY2F0aW9uIHN1Y2NlZWRlZC4iCiAgICAgICAgICAgICAgICAgIGRlcGxveWVkPSJ5ZXMiCiAgICAgICAgICAgICBlbHNlCiAgICAgICAgICAgICAgICAgZWNobyAiRmFpbGVkIHRvIGRlcGxveSBhcHBsaWNhdGlvbjsgY29udGludWluZyB3aXRoIHJlc3BvbnNlIGNvZGUgJyIkcmVzcG9uc2VfY29kZSInIgogICAgICAgICAgICAgZmkKICAgICAgICAgZWxzZQogICAgICAgICAgICAgZWNobyAiQ3VzdG9tIGNvbmZpZyB3YXMgbm90IHZhbGlkIEpTT04sIGNvbnRpbnVpbmciCiAgICAgICAgIGZpCiAgICBlbHNlCiAgICAgICAgZWNobyAiRmFpbGVkIHRvIGRvd25sb2FkIGN1c3RvbSBjb25maWc7IGNvbnRpbnVpbmcgd2l0aCByZXNwb25zZSBjb2RlICciJHJlc3BvbnNlX2NvZGUiJyIKICAgIGZpCmVsc2UKICAgICBlY2hvICJDdXN0b20gY29uZmlnIHdhcyBub3QgYSBVUkwsIGNvbnRpbnVpbmcuIgpmaQoKaWYgW1sgJGRlcGxveWVkID09ICJubyIgJiYgJGRlY2xhcmF0aW9uVXJsID09ICJOT1RfU1BFQ0lGSUVEIiBdXTsgdGhlbgogICAgZWNobyAiQXBwbGljYXRpb24gZGVwbG95bWVudCBmYWlsZWQgb3IgY3VzdG9tIFVSTCB3YXMgbm90IHNwZWNpZmllZC4iCmZpCgplY2hvICJEZXBsb3ltZW50IGNvbXBsZXRlLiIKZXhpdA==",
-    "extSubnetName": "external",
+    "extSubnetName": "subnet1",
     "extSubnetPrivateAddress": "[concat(parameters('vnetAddressPrefix'), '.2.4')]",
     "extSubnetPrivateAddressPrefix": "[concat(parameters('vnetAddressPrefix'), '.2.')]",
-    "extSelfPublicIpAddressNamePrefix": "[concat(variables('dnsLabel'), '-self-pip')]",
+    "extSelfPublicIpAddressNamePrefix": "[concat(variables('instanceName'), '-self-pip')]",
     "extSelfPublicIpAddressIdPrefix": "[resourceId('Microsoft.Network/publicIPAddresses', variables('extSelfPublicIpAddressNamePrefix'))]",
-    "extpublicIPAddressNamePrefix": "[concat(variables('dnsLabel'), '-ext-pip')]",
+    "extpublicIPAddressNamePrefix": "[concat(variables('instanceName'), '-ext-pip')]",
     "extPublicIPAddressIdPrefix": "[resourceId('Microsoft.Network/publicIPAddresses', variables('extPublicIPAddressNamePrefix'))]",
-    "extNicName": "[concat(variables('dnsLabel'), '-ext')]",
+    "extNicName": "[concat(variables('instanceName'), '-ext')]",
     "extNicID": "[resourceId('Microsoft.Network/NetworkInterfaces', variables('extNicName'))]",
     "extSubnetId": "[concat(variables('vnetId'), '/subnets/', variables('extsubnetName'))]",
     "routeCmd": "route",
-    "intSubnetName": "internal",
+    "intSubnetName": "subnet2",
     "intSubnetPrivateAddress": "[concat(parameters('vnetAddressPrefix'), '.3.4')]",
-    "intNicName": "[concat(variables('dnsLabel'), '-int')]",
+    "intNicName": "[concat(variables('instanceName'), '-int')]",
     "intNicID": "[resourceId('Microsoft.Network/NetworkInterfaces', variables('intNicName'))]",
     "intSubnetId": "[concat(variables('vnetId'), '/subnets/', variables('intsubnetName'))]",
     "zoneMappings": "[replace(toLower(string(providers('Microsoft.Compute', 'virtualMachines').zoneMappings)), ' ', '')]",
@@ -461,15 +468,15 @@
       }
     },
     "publicIPAddressType": "Static",
-    "mgmtPublicIPAddressName": "[concat(variables('dnsLabel'), '-mgmt-pip')]",
+    "mgmtPublicIPAddressName": "[concat(variables('instanceName'), '-mgmt-pip')]",
     "mgmtPublicIPAddressId": "[resourceId('Microsoft.Network/publicIPAddresses', variables('mgmtPublicIPAddressName'))]",
-    "mgmtNicName": "[concat(variables('dnsLabel'), '-mgmt')]",
+    "mgmtNicName": "[concat(variables('instanceName'), '-mgmt')]",
     "mgmtNicID": "[resourceId('Microsoft.Network/NetworkInterfaces', variables('mgmtNicName'))]",
     "mgmtSubnetId": "[concat(variables('vnetId'), '/subnets/', variables('mgmtSubnetName'))]",
     "tagValues": "[parameters('tagValues')]",
-    "newDataStorageAccountName": "[concat(uniqueString(variables('dnsLabel'), resourceGroup().id, deployment().name), 'data000')]",
+    "newDataStorageAccountName": "[concat(uniqueString(variables('instanceName'), resourceGroup().id, deployment().name), 'data000')]",
     "dataStorageAccountType": "Standard_LRS",
-    "deploymentId": "[concat(variables('subscriptionId'), resourceGroup().id, deployment().name, variables('dnsLabel'))]",
+    "deploymentId": "[concat(variables('subscriptionId'), resourceGroup().id, deployment().name, variables('instanceName'))]",
     "customConfig": "[parameters('customConfig')]",
     "allowUsageAnalytics": {
       "No": {
