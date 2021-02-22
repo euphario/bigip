@@ -94,8 +94,7 @@
           "properties": {
             "addressPrefix": "[concat(parameters('vnetAddressPrefix'), '.', copyIndex('constructSubnetArray'),'.0/24')]",
             "networkSecurityGroup": {
-              "condition": "[greater(variables('nsgArray')[copyIndex('constructSubnetArray')],0)]",
-              "id": "[resourceId('Microsoft.Network/networkSecurityGroups/',concat(parameters('uniqueString'),'-nsg', copyIndex('constructSubnetArray')))]"
+              "id": ""
             }
           }
         },
