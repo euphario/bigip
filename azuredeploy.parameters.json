@@ -38,9 +38,9 @@
     "serverCA": {
       "value": "https://raw.githubusercontent.com/euphario/bigip/main/serverCA.cert"
     },
-	"linkForBIGIPConfig": {
-		"value": "https://raw.githubusercontent.com/euphario/bigip/main/bigip_merge.conf"
-	},
+    "linkForBIGIPConfig": {
+      "value": "https://raw.githubusercontent.com/euphario/bigip/main/bigip_merge.conf"
+    },
     "tcpCluster": {
       "value": "10.240.0.245:25060"
     },
