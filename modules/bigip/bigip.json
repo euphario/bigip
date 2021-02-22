@@ -17,7 +17,7 @@
       },
       "type": "string"
     },
-    "adminPasswordOrKey": {
+    "adminPassword": {
       "metadata": {
         "description": "Password or SSH public key to login to the Virtual Machine. Note: There are a number of special characters that you should avoid using for F5 product user accounts.  See [K2873](https://support.f5.com/csp/article/K2873) for details. Note: If using key-based authentication, this should be the public key as a string, typically starting with **---- BEGIN SSH2 PUBLIC KEY ----** and ending with **---- END SSH2 PUBLIC KEY ----**."
       },
@@ -66,7 +66,7 @@
         19,
         20
       ],
-      "defaultValue": 1,
+      "defaultValue": 2,
       "metadata": {
         "description": "The number of public/private IP addresses you want to deploy for the application traffic (external) NIC on the BIG-IP VE to be used for virtual servers."
       },
@@ -150,14 +150,14 @@
         "PerAppVeAdvancedWaf25Mbps",
         "PerAppVeAdvancedWaf200Mbps"
       ],
-      "defaultValue": "Best1Gbps",
+      "defaultValue": "Best25Mbps",
       "metadata": {
         "description": "F5 SKU (image) you want to deploy. Note: The disk size of the VM will be determined based on the option you select.  **Important**: 10Gbps SKUs are supported only with BIGIP VE v15 or later. If intending to provision multiple modules, ensure the appropriate value is selected, such as **Best** instead of **Good**."
       },
       "type": "string"
     },
     "bigIpVersion": {
-      "defaultValue": "15.1.201000",
+      "defaultValue": "latest",
       "metadata": {
         "description": "F5 BIG-IP version you want to use."
       },
@@ -303,7 +303,7 @@
       "Standard_GS5"
     ],
     "location": "[resourceGroup().location]",
-    "adminPasswordOrKey": "[replace(parameters('adminPasswordOrKey'),'\\n', '\n')]",
+    "adminPassword": "[replace(parameters('adminPassword'),'\\n', '\n')]",
     "sshKey": "[parameters('sshKey')]",
     "linuxConfiguration": {
       "disablePasswordAuthentication": true,
@@ -501,7 +501,7 @@
     "allowPhoneHome": "[if(equals(parameters('allowPhoneHome'), 'Yes'), 'enabled', 'disabled')]",
     "osProfiles": {
       "password": {
-        "adminPassword": "[variables('adminPasswordOrKey')]",
+        "adminPassword": "[variables('adminPassword')]",
         "adminUsername": "[parameters('adminUsername')]",
         "computerName": "[variables('instanceName')]",
         "linuxConfiguration": "[json('null')]"
@@ -855,7 +855,7 @@
       "name": "[concat(variables('instanceName'),'/start')]",
       "properties": {
         "protectedSettings": {
-          "commandToExecute": "[concat('function cp_logs() { cd /var/lib/waagent/custom-script/download && cp `ls -r | head -1`/std* /var/log/cloud/azure; cd /var/log/cloud/azure && cat stdout stderr > install.log; }; CLOUD_LIB_DIR=/config/cloud/azure/node_modules/@f5devcentral; mkdir -p $CLOUD_LIB_DIR && cp f5-cloud-libs*.tar.gz* /config/cloud; mkdir -p /var/config/rest/downloads && cp ', variables('f5AS3Build'), ' /var/config/rest/downloads; mkdir -p /var/log/cloud/azure; /usr/bin/install -m 400 /dev/null /config/cloud/.passwd; /usr/bin/setdb provision.extramb 1000; /usr/bin/setdb restjavad.useextramb true; /usr/bin/curl -s -f -u admin: -H \"Content-Type: application/json\" -d ', variables('singleQuote'), '{\"maxMessageBodySize\":134217728} ', variables('singleQuote'), ' -X POST http://localhost:8100/mgmt/shared/server/messaging/settings/8100 | jq .; /usr/bin/install -b -m 755 /dev/null /config/verifyHash; /usr/bin/install -b -m 755 /dev/null /config/installCloudLibs.sh; IFS=', variables('singleQuote'), '%', variables('singleQuote'), '; echo -e ', variables('verifyHash'), ' > /config/verifyHash; echo -e ', variables('installCloudLibs'), ' > /config/installCloudLibs.sh; echo -e ', variables('appScript'), ' | /usr/bin/base64 -d > /config/cloud/deploy_app.sh; chmod +x /config/cloud/deploy_app.sh; echo -e ', variables('installCustomConfig'), ' >> /config/customConfig.sh; unset IFS; bash /config/installCloudLibs.sh; source $CLOUD_LIB_DIR/f5-cloud-libs/scripts/util.sh; encrypt_secret ', variables('singleQuote'), variables('adminPasswordOrKey'), variables('singleQuote'), ' \"/config/cloud/.passwd\" true; $CLOUD_LIB_DIR/f5-cloud-libs/scripts/createUser.sh --user svc_user --password-file /config/cloud/.passwd --password-encrypted; ', variables('allowUsageAnalytics')[parameters('allowUsageAnalytics')].hashCmd, '; /usr/bin/f5-rest-node $CLOUD_LIB_DIR/f5-cloud-libs/scripts/onboard.js --db dhclient.mgmt:disable --no-reboot --output /var/log/cloud/azure/onboard.log --signal ONBOARD_DONE --log-level info --cloud azure --install-ilx-package file:///var/config/rest/downloads/', variables('f5AS3Build'), ' --host ', reference(variables('mgmtNicId')).ipConfigurations[0].properties.privateIPAddress, ' --ssl-port ', variables('bigIpMgmtPort'), ' -u svc_user --password-url file:///config/cloud/.passwd --password-encrypted --hostname ', concat(variables('instanceName'), '.', variables('location'), '.cloudapp.azure.com'),  ' --ntp ', parameters('ntpServer'), ' --tz ', parameters('timeZone'), ' --modules ', parameters('bigIpModules'), ' --db tmm.maxremoteloglength:2048', variables('allowUsageAnalytics')[parameters('allowUsageAnalytics')].metricsCmd, '; tmsh modify sys software update auto-phonehome ', variables('allowPhoneHome'), '; /usr/bin/f5-rest-node $CLOUD_LIB_DIR/f5-cloud-libs/scripts/network.js --output /var/log/cloud/azure/network.log --wait-for ONBOARD_DONE --host ', reference(variables('mgmtNicId')).ipConfigurations[0].properties.privateIPAddress, ' --port ', variables('bigIpMgmtPort'), ' -u svc_user --password-url file:///config/cloud/.passwd --password-encrypted --default-gw ', variables('tmmRouteGw'), ' --vlan name:external,nic:1.1 --vlan name:internal,nic:1.2 --self-ip name:self_2nic,address:', reference(variables('extNicId')).ipConfigurations[0].properties.privateIPAddress, ',vlan:external --self-ip name:self_3nic,address:', reference(variables('intNicId')).ipConfigurations[0].properties.privateIPAddress, ',vlan:internal --log-level info', '; if [[ $? == 0 ]]; then tmsh list sys application service; ', variables('routeCmd'), '; echo -e ', variables('routeCmd'), ' >> /config/startup; bash /config/cloud/deploy_app.sh ', variables('commandArgs'), ' ; bash /config/customConfig.sh; $(cp_logs); else $(cp_logs); exit 1; fi', '; if grep -i \"PUT failed\" /var/log/waagent.log -q; then echo \"Killing waagent exthandler, daemon should restart it\"; pkill -f \"python -u /usr/sbin/waagent -run-exthandlers\"; fi')]"
+          "commandToExecute": "[concat('function cp_logs() { cd /var/lib/waagent/custom-script/download && cp `ls -r | head -1`/std* /var/log/cloud/azure; cd /var/log/cloud/azure && cat stdout stderr > install.log; }; CLOUD_LIB_DIR=/config/cloud/azure/node_modules/@f5devcentral; mkdir -p $CLOUD_LIB_DIR && cp f5-cloud-libs*.tar.gz* /config/cloud; mkdir -p /var/config/rest/downloads && cp ', variables('f5AS3Build'), ' /var/config/rest/downloads; mkdir -p /var/log/cloud/azure; /usr/bin/install -m 400 /dev/null /config/cloud/.passwd; /usr/bin/setdb provision.extramb 1000; /usr/bin/setdb restjavad.useextramb true; /usr/bin/curl -s -f -u admin: -H \"Content-Type: application/json\" -d ', variables('singleQuote'), '{\"maxMessageBodySize\":134217728} ', variables('singleQuote'), ' -X POST http://localhost:8100/mgmt/shared/server/messaging/settings/8100 | jq .; /usr/bin/install -b -m 755 /dev/null /config/verifyHash; /usr/bin/install -b -m 755 /dev/null /config/installCloudLibs.sh; IFS=', variables('singleQuote'), '%', variables('singleQuote'), '; echo -e ', variables('verifyHash'), ' > /config/verifyHash; echo -e ', variables('installCloudLibs'), ' > /config/installCloudLibs.sh; echo -e ', variables('appScript'), ' | /usr/bin/base64 -d > /config/cloud/deploy_app.sh; chmod +x /config/cloud/deploy_app.sh; echo -e ', variables('installCustomConfig'), ' >> /config/customConfig.sh; unset IFS; bash /config/installCloudLibs.sh; source $CLOUD_LIB_DIR/f5-cloud-libs/scripts/util.sh; encrypt_secret ', variables('singleQuote'), variables('adminPassword'), variables('singleQuote'), ' \"/config/cloud/.passwd\" true; $CLOUD_LIB_DIR/f5-cloud-libs/scripts/createUser.sh --user svc_user --password-file /config/cloud/.passwd --password-encrypted; ', variables('allowUsageAnalytics')[parameters('allowUsageAnalytics')].hashCmd, '; /usr/bin/f5-rest-node $CLOUD_LIB_DIR/f5-cloud-libs/scripts/onboard.js --db dhclient.mgmt:disable --no-reboot --output /var/log/cloud/azure/onboard.log --signal ONBOARD_DONE --log-level info --cloud azure --install-ilx-package file:///var/config/rest/downloads/', variables('f5AS3Build'), ' --host ', reference(variables('mgmtNicId')).ipConfigurations[0].properties.privateIPAddress, ' --ssl-port ', variables('bigIpMgmtPort'), ' -u svc_user --password-url file:///config/cloud/.passwd --password-encrypted --hostname ', concat(variables('instanceName'), '.', variables('location'), '.cloudapp.azure.com'),  ' --ntp ', parameters('ntpServer'), ' --tz ', parameters('timeZone'), ' --modules ', parameters('bigIpModules'), ' --db tmm.maxremoteloglength:2048', variables('allowUsageAnalytics')[parameters('allowUsageAnalytics')].metricsCmd, '; tmsh modify sys software update auto-phonehome ', variables('allowPhoneHome'), '; /usr/bin/f5-rest-node $CLOUD_LIB_DIR/f5-cloud-libs/scripts/network.js --output /var/log/cloud/azure/network.log --wait-for ONBOARD_DONE --host ', reference(variables('mgmtNicId')).ipConfigurations[0].properties.privateIPAddress, ' --port ', variables('bigIpMgmtPort'), ' -u svc_user --password-url file:///config/cloud/.passwd --password-encrypted --default-gw ', variables('tmmRouteGw'), ' --vlan name:external,nic:1.1 --vlan name:internal,nic:1.2 --self-ip name:self_2nic,address:', reference(variables('extNicId')).ipConfigurations[0].properties.privateIPAddress, ',vlan:external --self-ip name:self_3nic,address:', reference(variables('intNicId')).ipConfigurations[0].properties.privateIPAddress, ',vlan:internal --log-level info', '; if [[ $? == 0 ]]; then tmsh list sys application service; ', variables('routeCmd'), '; echo -e ', variables('routeCmd'), ' >> /config/startup; bash /config/cloud/deploy_app.sh ', variables('commandArgs'), ' ; bash /config/customConfig.sh; $(cp_logs); else $(cp_logs); exit 1; fi', '; if grep -i \"PUT failed\" /var/log/waagent.log -q; then echo \"Killing waagent exthandler, daemon should restart it\"; pkill -f \"python -u /usr/sbin/waagent -run-exthandlers\"; fi')]"
         },
         "publisher": "Microsoft.Azure.Extensions",
         "settings": {

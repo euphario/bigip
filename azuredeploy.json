@@ -84,7 +84,7 @@
     "uniqueString": "[toLower(parameters('uniqueString'))]",
     "adminUsername": "azureuser",
 
-    "assignManagedIdentity": "[parameters('adminPassword')]",
+    "assignManagedIdentity": "[not(empty(parameters('adminPassword')))]",
     "builtInRoleType": "Contributor",
     "customRoleAssignableScopes": [],
     "customRoleDescription": "",
