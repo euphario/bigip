@@ -188,6 +188,9 @@
           "nsg2": {
             "value": "[variables('nsg2')]"
           },
+          "uniqueString": {
+            "value": "[parameters('uniqueString')]"
+          },
           "vnetAddressPrefix": { "value": "[variables('vnetAddressPrefix')]" },
           "tagValues": { "value": "[parameters('tagValues')]" }
         }

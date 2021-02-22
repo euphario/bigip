@@ -99,7 +99,7 @@
             "addressPrefix": "[concat(parameters('vnetAddressPrefix'), '.', copyIndex('constructSubnetArray'),'.0/24')]"
           },
           "networkSecurityGroup": {
-            "id": "[resourceId('Microsoft.Network/networkSecurityGroups/',concat(parameters('uniqueString'),'-nsg', copyIndex('constructSubnetArray')))]"
+            "id": "[if(variables(concat('nsg', copyIndex('constructSubnetArray'), 'Length')),resourceId('Microsoft.Network/networkSecurityGroups/',concat(parameters('uniqueString'),'-nsg', copyIndex('constructSubnetArray'))), '') ]"
           }
         },
         "name": "constructSubnetArray"
@@ -133,7 +133,7 @@
             "destinationPortRanges": "[parameters('nsg1')[copyIndex('constructNsg1Array')].destinationPortRanges]",
             "direction": "Inbound",
             "priority": "[int(concat('10', copyIndex('constructNsg1Array')))]",
-            "protocol": "Any",
+            "protocol": "*",
             "sourceAddressPrefix": "[parameters('nsg1')[copyIndex('constructNsg1Array')].sourceAddressPrefix]",
             "sourcePortRange": "*"
           }
