@@ -331,7 +331,6 @@
           "uniqueString": {
             "value": "[parameters('uniqueString')]"
           },
-          "instanceIndex": { "value": 0 },
           "vnetAddressPrefix": { "value": "[variables('vnetAddressPrefix')]" },
           "bigipAsClientCert": { "value": "[parameters('bigipAsClientCert')]" },
           "bigipAsClientKey": { "value": "[parameters('bigipAsClientKey')]" },
