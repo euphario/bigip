@@ -57,6 +57,13 @@
       },
       "type": "string"
     },
+    "restrictedSrcAddress": {
+      "defaultValue": "*",
+      "metadata": {
+        "description": "When creating external security group, this field restricts access to a SIP traffic. Enter an IP address or address range in CIDR notation, or asterisk for all sources."
+      },
+      "type": "string"
+    },
     "vnetAddressPrefix": {
       "defaultValue": "10.0",
       "metadata": {
@@ -105,13 +112,15 @@
     "customConfig": "[concat(variables('bigipCustomCommand1'), variables('bigipCustomCommand2'), variables('bigipCustomCommand3'))]",
     "nsg0": [
       {
-        "destinationPortRanges": ["22", "8443"],
+        "destinationPortRanges": ["22", "443"],
         "sourceAddressPrefix": "[parameters('restrictedSrcMgmtAddress')]"
-      },
-      { "destinationPortRanges": ["80", "443"], "sourceAddressPrefix": "*" }
+      }
     ],
     "nsg1": [
-      { "destinationPortRanges": ["80", "443"], "sourceAddressPrefix": "*" }
+      {
+        "destinationPortRanges": ["5060", "5061"],
+        "sourceAddressPrefix": "[parameters('restrictedSrcAddress')]"
+      }
     ],
     "nsg2": []
   },
