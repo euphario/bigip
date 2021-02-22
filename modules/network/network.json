@@ -90,6 +90,7 @@
     "nsg2Array": "[variables('constructNsg2Array')]",
     "nsg2Length": "[length(parameters('nsg2'))]",
     "nsg2Name": "[concat(parameters('uniqueString'), '-nsg2')]",
+    "nsgArray": "[createArray(variables('nsg0Length'),variables('nsg1Length'),variables('nsg2Length'))]",
     "copy": [
       {
         "count": "[parameters('numSubnets')]",
@@ -99,7 +100,7 @@
             "addressPrefix": "[concat(parameters('vnetAddressPrefix'), '.', copyIndex('constructSubnetArray'),'.0/24')]"
           },
           "networkSecurityGroup": {
-            "id": "[if(variables(concat('nsg', copyIndex('constructSubnetArray'), 'Length')),resourceId('Microsoft.Network/networkSecurityGroups/',concat(parameters('uniqueString'),'-nsg', copyIndex('constructSubnetArray'))), '') ]"
+            "id": "[if(greater(variables('nsgArray')[copyIndex('constructSubnetArray')],0),resourceId('Microsoft.Network/networkSecurityGroups/',concat(parameters('uniqueString'),'-nsg', copyIndex('constructSubnetArray'))), json('null'))]"
           }
         },
         "name": "constructSubnetArray"
