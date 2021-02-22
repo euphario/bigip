@@ -359,15 +359,11 @@
     "intNicName": "[concat(variables('dnsLabel'), '-int')]",
     "intNicID": "[resourceId('Microsoft.Network/NetworkInterfaces', variables('intNicName'))]",
     "intSubnetId": "[concat(variables('vnetId'), '/subnets/', variables('intsubnetName'))]",
-    "availabilitySetName": "[concat(variables('dnsLabel'), '-avset')]",
     "zoneMappings": "[replace(toLower(string(providers('Microsoft.Compute', 'virtualMachines').zoneMappings)), ' ', '')]",
     "southcentralus": "[equals(variables('location'), string('southcentralus'))]",
     "southafricanorth": "[equals(variables('location'), string('southafricanorth'))]",
     "australiaeast": "[equals(variables('location'), string('australiaeast'))]",
     "zonesAvailable": "[and(contains(variables('zoneMappings'), concat('\"', variables('location'), '\"')), not(variables('southcentralus')), not(variables('southafricanorth')), not(variables('australiaeast')))]",
-    "availabilitySetId": {
-      "id": "[resourceId('Microsoft.Compute/availabilitySets',variables('availabilitySetName'))]"
-    },
     "vnetAddressPrefix": "[concat(parameters('vnetAddressPrefix'),'.0.0/16')]",
     "mgmtSubnetPrefix": "[concat(parameters('vnetAddressPrefix'), '.1.0/24')]",
     "tmmRouteGw": "[concat(parameters('vnetAddressPrefix'), '.2.1')]",
@@ -717,7 +713,7 @@
       "name": "[variables('instanceName')]",
       "plan": "[variables('imagePlan')]",
       "properties": {
-        "availabilitySet": "[if(not(variables('zonesAvailable')), variables('availabilitySetId'), json('null'))]",
+        "availabilitySet": "[json('null')]",
         "diagnosticsProfile": {
           "bootDiagnostics": {
             "enabled": true,
