@@ -165,7 +165,7 @@
       "tags": "[if(empty(parameters('tagValues')), json('null'), parameters('tagValues'))]",
       "properties": {
         "securityRules": "[variables('nsg0Array')]"
-      },
+      }
     },
     {
       "type": "Microsoft.Network/networkSecurityGroups",
@@ -175,7 +175,7 @@
       "tags": "[if(empty(parameters('tagValues')), json('null'), parameters('tagValues'))]",
       "properties": {
         "securityRules": "[variables('nsg1Array')]"
-      },
+      }
     },
     {
       "type": "Microsoft.Network/networkSecurityGroups",
@@ -185,7 +185,7 @@
       "tags": "[if(empty(parameters('tagValues')), json('null'), parameters('tagValues'))]",
       "properties": {
         "securityRules": "[variables('nsg2Array')]"
-      },
+      }
     },
     {
       "type": "Microsoft.Network/virtualNetworks",

@@ -1,39 +1,66 @@
 {
-	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
-	"contentVersion": "1.2.0.0",
-	"parameters": {
-		"templateBaseUrl": {
-			"value": "https://raw.githubusercontent.com/euphario/bigip/main/"
-		},
-		"artifactLocation": {
-			"value": "/"
-		},
-		"uniqueString": {
-			"value": "cx911"
-		},
-		"adminUsername": {
-			"value": "fadmin"
-		},
-		"adminPassword": {
-			"value": "Ami5Run20"
-		},
-		"sshKey": {
-			"value": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDs/hpcxAGA1vifU4YU47nJy2eZNbyQn1zV0gJP1wzV8yma6iUMyi0FSQKn9MD5De4unr59hc1sxq8+/Y6+B570Z2+XLTAoaDATbgDIQi/n7UmIZ4Y0kqUaVzWTtNC/xgFWZFdzS3iZKY8FxLqWZXsR21AUX65NzS6ggpWVaiAYLIItqwnuo9+RgbgnlOf64FyeEu41mgip6PpfwAXWkhMsxofZtN6ASQgKwsMmJYBMBdCck9JOzgbt5NtvhZzFSJYR3qwTMl9YV2bL+fjrj8I0GzQwuNOYc2DFjFl3z2bDBXP4nHjGN73D2FliILZAjeRH+l/v3EvxtHy70P44Mi5F heloin@CHR-ML-HELOIN"	
-		},
-		"restrictedSrcMgmtAddress": {
-			"value": "*"
-		},
-		"vnetAddressPrefix": {
-			"value": "10.250"
-		},
-		"tagValues": {
-			"value": {
-				"application": "APP",
-				"cost": "COST",
-				"environment": "ENV",
-				"group": "GROUP",
-				"owner": "OWNER"
-			}
-		}
-	}
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.2.0.0",
+  "parameters": {
+    "templateBaseUrl": {
+      "value": "https://raw.githubusercontent.com/euphario/bigip/main/"
+    },
+    "artifactLocation": {
+      "value": "/"
+    },
+    "uniqueString": {
+      "value": "cx911"
+    },
+    "adminUsername": {
+      "value": "fadmin"
+    },
+    "adminPassword": {
+      "value": "Ami5Run20"
+    },
+    "sshKey": {
+      "value": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDs/hpcxAGA1vifU4YU47nJy2eZNbyQn1zV0gJP1wzV8yma6iUMyi0FSQKn9MD5De4unr59hc1sxq8+/Y6+B570Z2+XLTAoaDATbgDIQi/n7UmIZ4Y0kqUaVzWTtNC/xgFWZFdzS3iZKY8FxLqWZXsR21AUX65NzS6ggpWVaiAYLIItqwnuo9+RgbgnlOf64FyeEu41mgip6PpfwAXWkhMsxofZtN6ASQgKwsMmJYBMBdCck9JOzgbt5NtvhZzFSJYR3qwTMl9YV2bL+fjrj8I0GzQwuNOYc2DFjFl3z2bDBXP4nHjGN73D2FliILZAjeRH+l/v3EvxtHy70P44Mi5F heloin@CHR-ML-HELOIN"
+    },
+    "bigipAsClientCert": {
+      "value": "https://raw.githubusercontent.com/euphario/bigip/main/bigipAsClient.cert"
+    },
+    "bigipAsClientKey": {
+      "value": "https://raw.githubusercontent.com/euphario/bigip/main/bigipAsClient.key"
+    },
+    "clientCA": {
+      "value": "https://raw.githubusercontent.com/euphario/bigip/main/clientCA.cert"
+    },
+    "bigipAsServerCert": {
+      "value": "https://raw.githubusercontent.com/euphario/bigip/main/bigipAsServer.cert"
+    },
+    "bigipAsServerKey": {
+      "value": "https://raw.githubusercontent.com/euphario/bigip/main/bigipAsServer.key"
+    },
+    "serverCA": {
+      "value": "https://raw.githubusercontent.com/euphario/bigip/main/serverCA.cert"
+    },
+	"linkForBIGIPConfig": {
+		"value": "https://raw.githubusercontent.com/euphario/bigip/main/bigip_merge.conf"
+	},
+    "tcpCluster": {
+      "value": "10.240.0.245:25060"
+    },
+    "udpCluster": {
+      "value": "10.240.0.247:25060"
+    },
+    "restrictedSrcMgmtAddress": {
+      "value": "*"
+    },
+    "vnetAddressPrefix": {
+      "value": "10.250"
+    },
+    "tagValues": {
+      "value": {
+        "application": "APP",
+        "cost": "COST",
+        "environment": "ENV",
+        "group": "GROUP",
+        "owner": "OWNER"
+      }
+    }
+  }
 }

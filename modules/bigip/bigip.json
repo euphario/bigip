@@ -226,10 +226,66 @@
       },
       "type": "string"
     },
-    "customConfig": {
-      "defaultValue": "### START (INPUT) CUSTOM CONFIGURATION HERE\ntmsh save sys config\n",
+    "bigipAsClientCert": {
+      "defaultValue": "",
       "metadata": {
-        "description": "Execute a script post deployment of the BIG-IP"
+        "description": "Link to Certificate to install for connection from SIP systems to BIG-IP"
+      },
+      "type": "string"
+    },
+    "bigipAsClientKey": {
+      "defaultValue": "",
+      "metadata": {
+        "description": "Link to Certificate Key to install for connection from SIP systems to BIG-IP"
+      },
+      "type": "string"
+    },
+    "clientCA": {
+      "defaultValue": "",
+      "metadata": {
+        "description": "Link to CA to validate client certs from SIP systems to BIG-IP"
+      },
+      "type": "string"
+    },
+    "bigipAsServerCert": {
+      "defaultValue": "",
+      "metadata": {
+        "description": "Link to Certificate to install for connection from BIG-IP to SIP systems"
+      },
+      "type": "string"
+    },
+    "bigipAsServerKey": {
+      "defaultValue": "",
+      "metadata": {
+        "description": "Link to Certificate Key to install for connection from BIG-IP to SIP systems"
+      },
+      "type": "string"
+    },
+    "serverCA": {
+      "defaultValue": "",
+      "metadata": {
+        "description": "Link to CA to validate client certs from SIP systems to BIG-IP"
+      },
+      "type": "string"
+    },
+    "linkForBIGIPConfig": {
+      "defaultValue": "",
+      "metadata": {
+        "description": "Link to the base config to install on BIG-IP"
+      },
+      "type": "string"
+    },
+    "tcpCluster": {
+      "defaultValue": "10.240.0.245:25060",
+      "metadata": {
+        "description": "IP Address and port of the TCP SIP Cluster <IPAddress>:<Port>"
+      },
+      "type": "string"
+    },
+    "udpCluster": {
+      "defaultValue": "10.240.0.247:25060",
+      "metadata": {
+        "description": "IP Address and port of the TCP SIP Cluster <IPAddress>:<Port>"
       },
       "type": "string"
     },
@@ -484,7 +540,6 @@
     "newDataStorageAccountName": "[concat(uniqueString(variables('instanceName'), resourceGroup().id, deployment().name), 'data000')]",
     "dataStorageAccountType": "Standard_LRS",
     "deploymentId": "[concat(variables('subscriptionId'), resourceGroup().id, deployment().name, variables('instanceName'))]",
-    "customConfig": "[parameters('customConfig')]",
     "allowUsageAnalytics": {
       "No": {
         "hashCmd": "echo AllowUsageAnalytics:No",
@@ -509,6 +564,29 @@
         "linuxConfiguration": "[variables('linuxConfiguration')]"
       }
     },
+    "vsIPAddress": "[concat(parameters('vnetAddressPrefix'), '.1.', add(parameters('instanceIndex'), 100))]",
+    "cc1": "[concat('/usr/bin/curl ', parameters('linkForBIGIPConfig'), ' -o /var/tmp/bigip_merge.conf\n')]",
+    "cc2": "[concat('/usr/bin/tmsh install sys crypto cert bigipAsServer from-url ', parameters('bigipAsServerCert'), '\n')]",
+    "cc3": "[concat('/usr/bin/tmsh install sys crypto key bigipAsServer from-url ', parameters('bigipAsServerKey'), '\n')]",
+    "cc4": "[concat('/usr/bin/tmsh install sys crypto cert clientCA from-url ', parameters('clientCA'), '\n')]",
+    "cc5": "[concat('/usr/bin/tmsh install sys crypto cert bigipAsClient from-url ', parameters('bigipAsClientCert'), '\n')]",
+    "cc6": "[concat('/usr/bin/tmsh install sys crypto key bigipAsClient from-url ', parameters('bigipAsClientKey'), '\n')]",
+    "cc7": "[concat('/usr/bin/tmsh install sys crypto cert serverCA from-url ', parameters('serverCA'), '\n')]",
+    "cc8": "/usr/bin/tmsh load sys config merge file /var/tmp/bigip_merge.conf\n",
+    "cc9": "[concat('/usr/bin/tmsh modify ltm pool /Common/sip-servers-tcp members replace-all-with { sip-transport-tcp.svc.cluster.local: ', split(parameters('tcpCluster'), ':')[1], ' { address ', split(parameters('tcpCluster'), ':')[0], ' } }\n')]",
+    "cc10": "[concat('/usr/bin/tmsh modify ltm pool /Common/sip-servers-udp members replace-all-with { sip-transport-udp.svc.cluster.local: ', split(parameters('udpCluster'), ':')[1], ' { address ', split(parameters('udpCluster'), ':')[0], ' } }\n')]",
+    "cc11": "[concat('/usr/bin/tmsh modify ltm snatpool /Common/tcp-snat-pool members replace-all-with { ', concat(parameters('vnetAddressPrefix'), '.2.', mul(add(parameters('instanceIndex'), 1), 10), ' } }\n'))]",
+    "cc12": "[concat('/usr/bin/tmsh modify ltm snatpool /Common/udp-snat-pool members replace-all-with { ', concat(parameters('vnetAddressPrefix'), '.2.', add(mul(add(parameters('instanceIndex'), 1), 10), 1), ' } }\n'))]",
+    "cc13": "[concat('/usr/bin/tmsh modify ltm virtual /Common/vs-clientside-initiated-flow address ', variables('vsIPAddress'), ':5060\n')]",
+    "cc14": "[concat('/usr/bin/tmsh modify ltm virtual /Common/vs-clientside-initiated-flow-tls address ', variables('vsIPAddress'), ':5061\n')]",
+    "cc15": "[concat('/usr/bin/tmsh modify ltm virtual /Common/vs-clientside-initiated-flow-udp address ', variables('vsIPAddress'), ':5060\n')]",
+    "cc16": "[concat('/usr/bin/tmsh modify ltm virtual /Common/vs-clientside-initiated-flow-udp-tls address ', variables('vsIPAddress'), ':5061\n')]",
+    "cc17": "[concat('/usr/bin/tmsh modify ltm virtual /Common/vs-serverside-directed-flow address ', variables('extSubnetPrivateAddress'), ':5060\n')]",
+    "cc18": "[concat('/usr/bin/tmsh modify ltm virtual /Common/vs-serverside-directed-flow-tls address ', variables('extSubnetPrivateAddress'), ':5061\n')]",
+    "cc19": "[concat('/usr/bin/tmsh modify ltm virtual /Common/vs-serverside-directed-flow-udp address ', variables('extSubnetPrivateAddress'), ':5060\n')]",
+    "cc20": "[concat('/usr/bin/tmsh modify ltm virtual /Common/vs-serverside-directed-flow-udp-tls address ', variables('extSubnetPrivateAddress'), ':5061\n')]",
+    "cc21": "/usr/bin/tmsh save sys config\n",
+    "customConfig": "[concat(variables('cc1'), variables('cc2'), variables('cc3'), variables('cc4'), variables('cc5'), variables('cc6'), variables('cc7'), variables('cc8'), variables('cc9'), variables('cc10'), variables('cc11'), variables('cc12'), variables('cc13'), variables('cc14'), variables('cc15'), variables('cc16'), variables('cc17'), variables('cc18'), variables('cc19'), variables('cc20'), variables('cc21'))]",
     "installCustomConfig": "[concat(variables('singleQuote'), '#!/bin/bash\n', variables('customConfig'), variables('singleQuote'))]"
   },
   "resources": [
@@ -645,7 +723,7 @@
                   "Id": "[if(equals(copyIndex('ipConfigurations', 1), 1), concat(variables('extSelfPublicIpAddressIdPrefix'), '0'), concat(variables('extPublicIPAddressIdPrefix'), sub(copyIndex('ipConfigurations', 1), 2)))]"
                 },
                 "primary": "[if(equals(copyIndex('ipConfigurations', 1), 1), 'True', 'False')]",
-                "privateIPAddress": "[if(equals(copyIndex('ipConfigurations', 1), 1), variables('extSubnetPrivateAddress'), concat(variables('extSubnetPrivateAddressPrefix'), 1, sub(copyIndex('ipConfigurations', 1), 2)))]",
+                "privateIPAddress": "[if(equals(copyIndex('ipConfigurations', 1), 1), variables('extSubnetPrivateAddress'), concat(variables('extSubnetPrivateAddressPrefix'), mul(add(parameters('instanceIndex'), 1), 10), sub(copyIndex('ipConfigurations', 1), 2)))]",
                 "privateIPAllocationMethod": "Static",
                 "subnet": {
                   "id": "[variables('extSubnetId')]"

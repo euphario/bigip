@@ -71,6 +71,69 @@
       },
       "type": "string"
     },
+    "linkForBIGIPConfig": {
+      "defaultValue": "",
+      "metadata": {
+        "description": "Link to the base config to install on BIG-IP"
+      },
+      "type": "string"
+    },
+    "bigipAsClientCert": {
+      "defaultValue": "",
+      "metadata": {
+        "description": "Link to Certificate to install for connection from SIP systems to BIG-IP"
+      },
+      "type": "string"
+    },
+    "bigipAsClientKey": {
+      "defaultValue": "",
+      "metadata": {
+        "description": "Link to Certificate Key to install for connection from SIP systems to BIG-IP"
+      },
+      "type": "string"
+    },
+    "clientCA": {
+      "defaultValue": "",
+      "metadata": {
+        "description": "Link to CA to validate client certs from SIP systems to BIG-IP"
+      },
+      "type": "string"
+    },
+    "bigipAsServerCert": {
+      "defaultValue": "",
+      "metadata": {
+        "description": "Link to Certificate to install for connection from BIG-IP to SIP systems"
+      },
+      "type": "string"
+    },
+    "bigipAsServerKey": {
+      "defaultValue": "",
+      "metadata": {
+        "description": "Link to Certificate Key to install for connection from BIG-IP to SIP systems"
+      },
+      "type": "string"
+    },
+    "serverCA": {
+      "defaultValue": "",
+      "metadata": {
+        "description": "Link to CA to validate client certs from SIP systems to BIG-IP"
+      },
+      "type": "string"
+    },
+    "tcpCluster": {
+      "defaultValue": "10.240.0.245:25060",
+      "metadata": {
+        "description": "IP Address and port of the TCP SIP Cluster <IPAddress>:<Port>"
+      },
+      "type": "string"
+    },
+    "udpCluster": {
+      "defaultValue": "10.240.0.247:25060",
+      "metadata": {
+        "description": "IP Address and port of the TCP SIP Cluster <IPAddress>:<Port>"
+      },
+      "type": "string"
+    },
     "tagValues": {
       "defaultValue": {
         "application": "APP",
@@ -104,10 +167,6 @@
     "userAssignedIdentityName": "[concat(variables('uniqueString'), '-secretIdentity')]",
     "virtualNetworkName": "[concat(variables('uniqueString'), '-vnet')]",
     "vnetAddressPrefix": "[parameters('vnetAddressPrefix')]",
-    "bigipCustomCommand1": "/usr/bin/curl https://raw.githubusercontent.com/euphario/bigip/main/bigip_merge.conf -o /var/tmp/bigip_merge.conf\n",
-    "bigipCustomCommand2": "/usr/bin/tmsh load sys config merge file /var/tmp/bigip_merge.conf\n",
-    "bigipCustomCommand3": "/usr/bin/tmsh save sys config\n",
-    "customConfig": "[concat(variables('bigipCustomCommand1'), variables('bigipCustomCommand2'), variables('bigipCustomCommand3'))]",
     "nsg0": [
       {
         "destinationPortRanges": ["22", "443"],
@@ -219,8 +278,22 @@
             "value": "[parameters('uniqueString')]"
           },
           "vnetAddressPrefix": { "value": "[variables('vnetAddressPrefix')]" },
-          "tagValues": { "value": "[parameters('tagValues')]" },
-          "customConfig": { "value": "[variables('customConfig')]" }
+          "bigipAsClientCert": { "value": "[parameters('bigipAsClientCert')]" },
+          "bigipAsClientKey": { "value": "[parameters('bigipAsClientKey')]" },
+          "clientCA": { "value": "[parameters('clientCA')]" },
+          "bigipAsServerCert": { "value": "[parameters('bigipAsServerCert')]" },
+          "bigipAsServerKey": { "value": "[parameters('bigipAsServerKey')]" },
+          "serverCA": { "value": "[parameters('serverCA')]" },
+          "linkForBIGIPConfig": {
+            "value": "[parameters('linkForBIGIPConfig')]"
+          },
+          "tcpCluster": {
+            "value": "[parameters('tcpCluster')]"
+          },
+          "udpCluster": {
+            "value": "[parameters('udpCluster')]"
+          },
+          "tagValues": { "value": "[parameters('tagValues')]" }
         }
       }
     }
