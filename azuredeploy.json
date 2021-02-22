@@ -263,7 +263,7 @@
     {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "[variables('deploymentApiVersion')]",
-      "name": "bigipTemplate",
+      "name": "bigipTemplate1",
       "dependsOn": ["accessTemplate", "networkTemplate"],
       "properties": {
         "mode": "Incremental",
@@ -275,6 +275,7 @@
           "adminUsername": { "value": "[parameters('adminUsername')]" },
           "adminPassword": { "value": "[parameters('adminPassword')]" },
           "sshKey": { "value": "[parameters('sshKey')]" },
+          "instanceIndex": { "value": 0 },
           "dnsLabel": {
             "value": "[concat(parameters('uniqueString'), '-sip', '01')]"
           },
@@ -292,7 +293,53 @@
           "bigipAsServerKey": { "value": "[parameters('bigipAsServerKey')]" },
           "serverCA": { "value": "[parameters('serverCA')]" },
           "kubernetesSubnet": { "value": "[parameters('kubernetesSubnet')]" },
-
+          "linkForBIGIPConfig": {
+            "value": "[parameters('linkForBIGIPConfig')]"
+          },
+          "tcpCluster": {
+            "value": "[parameters('tcpCluster')]"
+          },
+          "udpCluster": {
+            "value": "[parameters('udpCluster')]"
+          },
+          "tagValues": { "value": "[parameters('tagValues')]" }
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "[variables('deploymentApiVersion')]",
+      "name": "bigipTemplate2",
+      "dependsOn": ["accessTemplate", "networkTemplate"],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(parameters('templateBaseUrl'), parameters('artifactLocation'), 'modules/bigip/bigip.json')]",
+          "contentVersion": "[variables('contentVersion')]"
+        },
+        "parameters": {
+          "adminUsername": { "value": "[parameters('adminUsername')]" },
+          "adminPassword": { "value": "[parameters('adminPassword')]" },
+          "sshKey": { "value": "[parameters('sshKey')]" },
+          "instanceIndex": { "value": 1 },
+          "dnsLabel": {
+            "value": "[concat(parameters('uniqueString'), '-sip', '02')]"
+          },
+          "instanceName": {
+            "value": "[concat(parameters('uniqueString'), '-', parameters('bigipPrefix'), '02')]"
+          },
+          "uniqueString": {
+            "value": "[parameters('uniqueString')]"
+          },
+          "instanceIndex": { "value": 0 },
+          "vnetAddressPrefix": { "value": "[variables('vnetAddressPrefix')]" },
+          "bigipAsClientCert": { "value": "[parameters('bigipAsClientCert')]" },
+          "bigipAsClientKey": { "value": "[parameters('bigipAsClientKey')]" },
+          "clientCA": { "value": "[parameters('clientCA')]" },
+          "bigipAsServerCert": { "value": "[parameters('bigipAsServerCert')]" },
+          "bigipAsServerKey": { "value": "[parameters('bigipAsServerKey')]" },
+          "serverCA": { "value": "[parameters('serverCA')]" },
+          "kubernetesSubnet": { "value": "[parameters('kubernetesSubnet')]" },
           "linkForBIGIPConfig": {
             "value": "[parameters('linkForBIGIPConfig')]"
           },

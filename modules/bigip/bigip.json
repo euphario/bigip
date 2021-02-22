@@ -593,7 +593,7 @@
     "cc18": "[concat('/usr/bin/tmsh modify ltm virtual /Common/vs-serverside-directed-flow-tls destination ', variables('extSubnetPrivateAddress'), ':5061\n')]",
     "cc19": "[concat('/usr/bin/tmsh modify ltm virtual /Common/vs-serverside-directed-flow-udp destination ', variables('extSubnetPrivateAddress'), ':5060\n')]",
     "cc20": "[concat('/usr/bin/tmsh modify ltm virtual /Common/vs-serverside-directed-flow-udp-tls destination ', variables('extSubnetPrivateAddress'), ':5061\n')]",
-    "cc21": "[concat('/usr/bin/tmsh create net route toK8S network ', parameters('kubernetesSubnet'), ' gw ', variables('tmmK8Gw'))]",
+    "cc21": "[concat('/usr/bin/tmsh create net route toK8S network ', parameters('kubernetesSubnet'), ' gw ', variables('tmmK8Gw'), '\n')]",
     "cc22": "/usr/bin/tmsh save sys config\n",
     "customConfig": "[concat(variables('cc1'), variables('cc2'), variables('cc3'), variables('cc4'), variables('cc5'), variables('cc6'), variables('cc7'), variables('cc8'), variables('cc9'), variables('cc10'), variables('cc11'), variables('cc12'), variables('cc13'), variables('cc14'), variables('cc15'), variables('cc16'), variables('cc17'), variables('cc18'), variables('cc19'), variables('cc20'), variables('cc21'), variables('cc22'))]",
     "installCustomConfig": "[concat(variables('singleQuote'), '#!/bin/bash\n', variables('customConfig'), variables('singleQuote'))]"
