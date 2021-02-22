@@ -50,6 +50,9 @@
     "restrictedSrcMgmtAddress": {
       "value": "*"
     },
+    "restrictedSrcAddress": {
+      "value": "*"
+    },
     "vnetAddressPrefix": {
       "value": "10.250"
     },
