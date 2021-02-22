@@ -123,8 +123,8 @@
       }
     ],
     "nsg2": [      {
-        "destinationPortRanges": ["5060", "5061"],
-        "sourceAddressPrefix": "[parameters('restrictedSrcAddress')]"
+        "destinationPortRanges": ["*"],
+        "sourceAddressPrefix": ["*"]
       }]
   },
   "resources": [

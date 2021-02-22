@@ -48,12 +48,7 @@
       }
     },
     "nsg2": {
-      "defaultValue": [
-        {
-          "destinationPortRanges": ["25060", "25061"],
-          "sourceAddressPrefix": "*"
-        }
-      ],
+      "defaultValue": [],
       "type": "array",
       "metadata": {
         "description": "Valid values include an array containing network security rule property objects, or an empty array. A non-empty array value creates a security group and inbound rules using the destinationPortRanges and sourceAddressPrefix values provided for each object."
@@ -99,7 +94,7 @@
           "properties": {
             "addressPrefix": "[concat(parameters('vnetAddressPrefix'), '.', copyIndex('constructSubnetArray'),'.0/24')]",
             "networkSecurityGroup": {
-              "id": "[if(greater(variables('nsgArray')[copyIndex('constructSubnetArray')],0),resourceId('Microsoft.Network/networkSecurityGroups/',concat(parameters('uniqueString'),'-nsg', copyIndex('constructSubnetArray'))), json('null'))]"
+              "id": "[resourceId('Microsoft.Network/networkSecurityGroups/',concat(parameters('uniqueString'),'-nsg', copyIndex('constructSubnetArray')))]"
             }
           }
         },
