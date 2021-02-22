@@ -29,47 +29,40 @@
       },
       "type": "string"
     },
-    "instanceType": {
-      "defaultValue": "Standard_DS2_v2",
+    "bigipPrefix": {
+      "defaultValue": "f5vm",
       "metadata": {
-        "description": "Enter valid instance type."
+        "description": "A prefix that will be used to name template resources. Because some resources require globally unique names, we recommend using a unique value."
       },
       "type": "string"
     },
-    "newPassword": {
+    "adminUsername": {
+      "defaultValue": "azureuser",
+      "metadata": {
+        "description": "User name for the Virtual Machine."
+      },
+      "type": "string"
+    },
+    "adminPassword": {
       "defaultValue": "",
       "metadata": {
         "description": "The new password to be used for the admin user on the BIG-IP instances. This is required for creating the AZURE_PASSWORD secret referenced in the runtimeConfig template parameter."
       },
       "type": "securestring"
     },
-    "appContainer": {
-      "defaultValue": "f5devcentral/f5-demo-app:1.0.1",
-      "metadata": {
-        "description": "The docker container to use when deploying the example application."
-      },
-      "type": "string"
-    },
     "restrictedSrcMgmtAddress": {
-      "defaultValue": "",
+      "defaultValue": "*",
       "metadata": {
         "description": "When creating management security group, this field restricts management access to a specific network or address. Enter an IP address or address range in CIDR notation, or asterisk for all sources."
       },
       "type": "string"
     },
-    "runtimeConfig": {
-      "defaultValue": "https://raw.githubusercontent.com/F5Networks/f5-azure-arm-templates-v2/master/examples/autoscale/bigip-configurations/runtime-init-conf-payg.yaml",
+    "vnetAddressPrefix": {
+      "defaultValue": "10.0",
       "metadata": {
-        "description": "Supply a URL to the bigip-runtime-init configuration file in YAML or JSON format, or an escaped JSON string to use for f5-bigip-runtime-init configuration."
+        "description": "The start of the CIDR block the BIG-IP VEs use when creating the Vnet and subnets.  You MUST type just the first two octets of the /16 virtual network that will be created, for example '10.0', '10.100', 192.168'."
       },
       "type": "string"
-    },
-    "useAvailabilityZones": {
-      "defaultValue": true,
-      "metadata": {
-        "description": "This deployment can deploy resources into Azure Availability Zones (if the region supports it).  If that is not desired the input should be set 'No'. If the region does not support availability zones the input should be set to No."
-      },
-      "type": "bool"
     },
     "tagValues": {
       "defaultValue": {
@@ -91,7 +84,7 @@
     "uniqueString": "[toLower(parameters('uniqueString'))]",
     "adminUsername": "azureuser",
 
-    "assignManagedIdentity": "[or(not(empty(parameters('newPassword'))), not(empty(variables('customAutoscaleRules'))))]",
+    "assignManagedIdentity": "[parameters('adminPassword')]",
     "builtInRoleType": "Contributor",
     "customRoleAssignableScopes": [],
     "customRoleDescription": "",
@@ -104,15 +97,14 @@
     "userAssignedIdentityName": "[concat(variables('uniqueString'), '-secretIdentity')]",
 
     "numSubnets": 3,
-    "restrictedSrcMgmtPort": "8443",
     "virtualNetworkName": "[concat(variables('uniqueString'), '-vnet')]",
-    "vnetAddressPrefix": "10.250",
-
-    "externalLoadBalancerName": "[concat(variables('uniqueString'), '-alb')]",
-    "internalLoadBalancerName": "None",
-    "internalLoadBalancerProbePort": "3456",
-    "internalSubnetId": "",
-    "loadBalancerRulePorts": ["80", "443"],
+    "vnetAddressPrefix": "[parameters('vnetAddressPrefix')]",
+    "bigipCustomCommands": [
+      "/usr/bin/curl https://raw.githubusercontent.com/euphario/bigip/main/bigip_merge.conf -o /var/tmp/bigip_merge.conf\n",
+      "/usr/bin/tmsh load sys config merge file /var/tmp/bigip_merge.conf\n",
+      "/usr/bin/tmsh save sys config\n"
+    ],
+    "customConfig": "[concat(variables('bigipCustomCommands'))]",
     "nsg0": [
       {
         "destinationPortRanges": ["22", "8443"],
@@ -123,112 +115,7 @@
     "nsg1": [
       { "destinationPortRanges": ["80", "443"], "sourceAddressPrefix": "*" }
     ],
-    "nsg2": [],
-    "numberPublicExternalIPAddresses": 1,
-    "numberPublicMgmtIPAddresses": 1,
-
-    "provisionApp": "[not(empty(parameters('appContainer')))]",
-    "appInstanceName": "appvm01",
-    "cloudInitDeliveryLocation": "",
-
-    "appInsights": "[concat(variables('uniqueString'), '-insights')]",
-    "appInsightsId": "[resourceId('Microsoft.Insights/components', variables('appInsights'))]",
-    "cpuMetricName": "Percentage CPU",
-    "customAutoscaleRules": [
-      {
-        "scaleAction": {
-          "direction": "Increase",
-          "type": "ChangeCount",
-          "value": "1",
-          "cooldown": "PT1M"
-        },
-        "metricTrigger": {
-          "metricName": "customMetrics/F5_system_cpu",
-          "metricNamespace": "",
-          "metricResourceUri": "[variables('appInsightsId')]",
-          "operator": "GreaterThan",
-          "statistic": "Average",
-          "threshold": "80",
-          "timeAggregation": "Average",
-          "timeGrain": "PT1M",
-          "timeWindow": "PT10M"
-        }
-      },
-      {
-        "scaleAction": {
-          "direction": "Decrease",
-          "type": "ChangeCount",
-          "value": "1",
-          "cooldown": "PT1M"
-        },
-        "metricTrigger": {
-          "metricName": "customMetrics/F5_system_cpu",
-          "metricNamespace": "",
-          "metricResourceUri": "[variables('appInsightsId')]",
-          "operator": "LessThan",
-          "statistic": "Average",
-          "threshold": "20",
-          "timeAggregation": "Average",
-          "timeGrain": "PT1M",
-          "timeWindow": "PT10M"
-        }
-      },
-      {
-        "scaleAction": {
-          "direction": "Increase",
-          "type": "ChangeCount",
-          "value": "1",
-          "cooldown": "PT1M"
-        },
-        "metricTrigger": {
-          "metricName": "customMetrics/F5_system_networkInterfaces_mgmt_counters.bitsIn",
-          "metricNamespace": "",
-          "metricResourceUri": "[variables('appInsightsId')]",
-          "operator": "GreaterThan",
-          "statistic": "Average",
-          "threshold": "20000000",
-          "timeAggregation": "Average",
-          "timeGrain": "PT1M",
-          "timeWindow": "PT10M"
-        }
-      },
-      {
-        "scaleAction": {
-          "direction": "Decrease",
-          "type": "ChangeCount",
-          "value": "1",
-          "cooldown": "PT1M"
-        },
-        "metricTrigger": {
-          "metricName": "customMetrics/F5_system_networkInterfaces_mgmt_counters.bitsIn",
-          "metricNamespace": "",
-          "metricResourceUri": "[variables('appInsightsId')]",
-          "operator": "LessThan",
-          "statistic": "Average",
-          "threshold": "10000000",
-          "timeAggregation": "Average",
-          "timeGrain": "PT1M",
-          "timeWindow": "PT10M"
-        }
-      }
-    ],
-    "customEmail": [],
-    "image": "f5-networks:f5-big-ip-best:f5-bigip-virtual-edition-25m-best-hourly:latest",
-    "provisionPublicIPBigip": {
-      "name": "publicIp01",
-      "properties": { "idleTimeoutInMinutes": 15 }
-    },
-    "roleDefinitionId": "",
-    "scaleInCpuThreshold": 20,
-    "scaleInThroughputThreshold": 10000000,
-    "scaleInTimeWindow": 10,
-    "scaleOutCpuThreshold": 80,
-    "scaleOutThroughputThreshold": 20000000,
-    "scaleOutTimeWindow": 10,
-    "throughputMetricName": "Network In",
-    "vmScaleSetMaxCount": 2,
-    "vmScaleSetMinCount": 2,
-    "vmssName": "[concat(variables('uniqueString'), '-vmss')]"
+    "nsg2": []
   },
   "resources": [
     {
@@ -262,7 +149,7 @@
             "value": "[variables('keyVaultPermissionsSecrets')]"
           },
           "secretName": { "value": "[variables('secretName')]" },
-          "secretValue": { "value": "[parameters('newPassword')]" },
+          "secretValue": { "value": "[parameters('adminPassword')]" },
           "userAssignedIdentityName": {
             "value": "[variables('userAssignedIdentityName')]"
           },
@@ -301,9 +188,19 @@
           "uri": "[concat(parameters('templateBaseUrl'), parameters('artifactLocation'), 'modules/bigip/bigip.json')]",
           "contentVersion": "[variables('contentVersion')]"
         },
-        "parametersLink": {
-          "uri": "[concat(parameters('templateBaseUrl'), parameters('artifactLocation'), 'modules/bigip/bigip.parameters.json')]",
-          "contentVersion": "[variables('contentVersion')]"
+        "parameters": {
+          "adminUsername": { "value": "[parameters('adminUsername')]" },
+          "adminPassword": { "value": "[parameters('adminPassword')]" },
+          "sshKey": { "value": "[parameters('sshKey')]" },
+          "dnsLabel": {
+            "value": "[concat(parameters('uniqueString'), '-sip', '01')]"
+          },
+          "instanceName": {
+            "value": "[concat(parameters('uniqueString'), '-', parameters('bigipPrefix'), '01')]"
+          },
+          "vnetAddressPrefix": { "value": "[variables('vnetAddressPrefix')]" },
+          "tagValues": { "value": "[parameters('tagValues')]" },
+          "customConfig": { "value": "[variables('customConfig')]" }
         }
       }
     }
@@ -313,29 +210,14 @@
       "type": "String",
       "value": "[reference('networkTemplate').outputs.virtualNetwork.value]"
     },
-    "appVmName": {
-      "condition": "[variables('provisionApp')]",
-      "type": "String",
-      "value": "[variables('appInstanceName')]"
-    },
-    "appPrivateIp": {
-      "condition": "[variables('provisionApp')]",
-      "type": "String",
-      "value": "[reference('appTemplate').outputs.appIp.value]"
-    },
-    "appUsername": {
-      "condition": "[variables('provisionApp')]",
-      "type": "String",
-      "value": "[variables('adminUsername')]"
-    },
     "bigipUsername": {
       "type": "String",
       "value": "[variables('adminUsername')]"
     },
     "bigipPassword": {
-      "condition": "[not(empty(parameters('newPassword')))]",
+      "condition": "[not(empty(parameters('adminPassword')))]",
       "type": "String",
-      "value": "[parameters('newPassword')]"
+      "value": "[parameters('adminPassword')]"
     }
   }
 }
