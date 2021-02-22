@@ -179,6 +179,15 @@
           "virtualNetworkName": {
             "value": "[variables('virtualNetworkName')]"
           },
+          "nsg0": {
+            "value": "[variables('nsg0')]"
+          },
+          "nsg1": {
+            "value": "[variables('nsg1')]"
+          },
+          "nsg2": {
+            "value": "[variables('nsg2')]"
+          },
           "vnetAddressPrefix": { "value": "[variables('vnetAddressPrefix')]" },
           "tagValues": { "value": "[parameters('tagValues')]" }
         }

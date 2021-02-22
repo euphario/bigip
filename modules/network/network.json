@@ -23,6 +23,49 @@
         "description": "Enter the start of the CIDR block used when creating the vnet and subnets.  You MUST type just the first two octets of the /16 virtual network that will be created, for example '10.0', '10.100', 192.168'."
       }
     },
+    "nsg0": {
+      "defaultValue": [
+        {
+          "destinationPortRanges": ["22", "443"],
+          "sourceAddressPrefix": "*"
+        }
+      ],
+      "type": "array",
+      "metadata": {
+        "description": "Valid values include an array containing network security rule property objects, or an empty array. A non-empty array value creates a security group and inbound rules using the destinationPortRanges and sourceAddressPrefix values provided for each object."
+      }
+    },
+    "nsg1": {
+      "defaultValue": [
+        {
+          "destinationPortRanges": ["5060", "5061"],
+          "sourceAddressPrefix": "*"
+        }
+      ],
+      "type": "array",
+      "metadata": {
+        "description": "Valid values include an array containing network security rule property objects, or an empty array. A non-empty array value creates a security group and inbound rules using the destinationPortRanges and sourceAddressPrefix values provided for each object."
+      }
+    },
+    "nsg2": {
+      "defaultValue": [
+        {
+          "destinationPortRanges": ["25060", "25061"],
+          "sourceAddressPrefix": "*"
+        }
+      ],
+      "type": "array",
+      "metadata": {
+        "description": "Valid values include an array containing network security rule property objects, or an empty array. A non-empty array value creates a security group and inbound rules using the destinationPortRanges and sourceAddressPrefix values provided for each object."
+      }
+    },
+    "uniqueString": {
+      "defaultValue": "",
+      "metadata": {
+        "description": "A prefix that will be used to name template resources. Because some resources require globally unique names, we recommend using a unique value."
+      },
+      "type": "string"
+    },
     "tagValues": {
       "defaultValue": {
         "application": "APP",
@@ -38,6 +81,15 @@
     }
   },
   "variables": {
+    "nsg0Array": "[variables('constructNsg0Array')]",
+    "nsg0Length": "[length(parameters('nsg0'))]",
+    "nsg0Name": "[concat(parameters('uniqueString'), '-nsg0')]",
+    "nsg1Array": "[variables('constructNsg1Array')]",
+    "nsg1Length": "[length(parameters('nsg1'))]",
+    "nsg1Name": "[concat(parameters('uniqueString'), '-nsg1')]",
+    "nsg2Array": "[variables('constructNsg2Array')]",
+    "nsg2Length": "[length(parameters('nsg2'))]",
+    "nsg2Name": "[concat(parameters('uniqueString'), '-nsg2')]",
     "copy": [
       {
         "count": "[parameters('numSubnets')]",
@@ -45,18 +97,112 @@
           "name": "[concat('subnet', copyIndex('constructSubnetArray'))]",
           "properties": {
             "addressPrefix": "[concat(parameters('vnetAddressPrefix'), '.', copyIndex('constructSubnetArray'),'.0/24')]"
+          },
+          "networkSecurityGroup": {
+            "id": "[resourceId('Microsoft.Network/networkSecurityGroups/',concat(parameters('uniqueString'),'-nsg', copyIndex('constructSubnetArray')))]"
           }
         },
         "name": "constructSubnetArray"
+      },
+      {
+        "count": "[variables('nsg0Length')]",
+        "input": {
+          "name": "[concat('nsg0_allow_', copyIndex('constructNsg0Array'))]",
+          "properties": {
+            "access": "Allow",
+            "description": "NSG0 Allow",
+            "destinationAddressPrefix": "*",
+            "destinationPortRanges": "[parameters('nsg0')[copyIndex('constructNsg0Array')].destinationPortRanges]",
+            "direction": "Inbound",
+            "priority": "[int(concat('10', copyIndex('constructNsg0Array')))]",
+            "protocol": "Tcp",
+            "sourceAddressPrefix": "[parameters('nsg0')[copyIndex('constructNsg0Array')].sourceAddressPrefix]",
+            "sourcePortRange": "*"
+          }
+        },
+        "name": "constructNsg0Array"
+      },
+      {
+        "count": "[variables('nsg1Length')]",
+        "input": {
+          "name": "[concat('nsg1_allow_', copyIndex('constructNsg1Array'))]",
+          "properties": {
+            "access": "Allow",
+            "description": "NSG1 Allow",
+            "destinationAddressPrefix": "*",
+            "destinationPortRanges": "[parameters('nsg1')[copyIndex('constructNsg1Array')].destinationPortRanges]",
+            "direction": "Inbound",
+            "priority": "[int(concat('10', copyIndex('constructNsg1Array')))]",
+            "protocol": "Any",
+            "sourceAddressPrefix": "[parameters('nsg1')[copyIndex('constructNsg1Array')].sourceAddressPrefix]",
+            "sourcePortRange": "*"
+          }
+        },
+        "name": "constructNsg1Array"
+      },
+      {
+        "count": "[variables('nsg2Length')]",
+        "input": {
+          "name": "[concat('nsg2_allow_', copyIndex('constructNsg2Array'))]",
+          "properties": {
+            "access": "Allow",
+            "description": "NSG2 Allow",
+            "destinationAddressPrefix": "*",
+            "destinationPortRanges": "[parameters('nsg2')[copyIndex('constructNsg2Array')].destinationPortRanges]",
+            "direction": "Inbound",
+            "priority": "[int(concat('10', copyIndex('constructNsg2Array')))]",
+            "protocol": "Tcp",
+            "sourceAddressPrefix": "[parameters('nsg2')[copyIndex('constructNsg2Array')].sourceAddressPrefix]",
+            "sourcePortRange": "*"
+          }
+        },
+        "name": "constructNsg2Array"
       }
     ],
     "networkApiVersion": "2019-11-01"
   },
   "resources": [
     {
+      "type": "Microsoft.Network/networkSecurityGroups",
+      "apiVersion": "[variables('networkApiVersion')]",
+      "name": "[variables('nsg0Name')]",
+      "location": "[resourceGroup().location]",
+      "tags": "[if(empty(parameters('tagValues')), json('null'), parameters('tagValues'))]",
+      "properties": {
+        "securityRules": "[variables('nsg0Array')]"
+      },
+      "condition": "[not(empty(parameters('nsg0')))]"
+    },
+    {
+      "type": "Microsoft.Network/networkSecurityGroups",
+      "apiVersion": "[variables('networkApiVersion')]",
+      "name": "[variables('nsg1Name')]",
+      "location": "[resourceGroup().location]",
+      "tags": "[if(empty(parameters('tagValues')), json('null'), parameters('tagValues'))]",
+      "properties": {
+        "securityRules": "[variables('nsg1Array')]"
+      },
+      "condition": "[not(empty(parameters('nsg1')))]"
+    },
+    {
+      "type": "Microsoft.Network/networkSecurityGroups",
+      "apiVersion": "[variables('networkApiVersion')]",
+      "name": "[variables('nsg2Name')]",
+      "location": "[resourceGroup().location]",
+      "tags": "[if(empty(parameters('tagValues')), json('null'), parameters('tagValues'))]",
+      "properties": {
+        "securityRules": "[variables('nsg2Array')]"
+      },
+      "condition": "[not(empty(parameters('nsg2')))]"
+    },
+    {
       "type": "Microsoft.Network/virtualNetworks",
       "apiVersion": "[variables('networkApiVersion')]",
-      "dependsOn": [],
+      "dependsOn": [
+        "[variables('nsg0Name')]",
+        "[variables('nsg1Name')]",
+        "[variables('nsg2Name')]"
+      ],
       "name": "[parameters('virtualNetworkName')]",
       "location": "[resourceGroup().location]",
       "tags": "[if(empty(parameters('tagValues')), json('null'), parameters('tagValues'))]",
