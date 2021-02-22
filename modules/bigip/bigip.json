@@ -346,7 +346,6 @@
     "extSubnetName": "external",
     "extSubnetPrivateAddress": "[concat(parameters('vnetAddressPrefix'), '.2.4')]",
     "extSubnetPrivateAddressPrefix": "[concat(parameters('vnetAddressPrefix'), '.2.')]",
-    "extNsgID": "[resourceId('Microsoft.Network/networkSecurityGroups/',concat(variables('dnsLabel'),'-ext-nsg'))]",
     "extSelfPublicIpAddressNamePrefix": "[concat(variables('dnsLabel'), '-self-pip')]",
     "extSelfPublicIpAddressIdPrefix": "[resourceId('Microsoft.Network/publicIPAddresses', variables('extSelfPublicIpAddressNamePrefix'))]",
     "extpublicIPAddressNamePrefix": "[concat(variables('dnsLabel'), '-ext-pip')]",
@@ -468,7 +467,6 @@
     "publicIPAddressType": "Static",
     "mgmtPublicIPAddressName": "[concat(variables('dnsLabel'), '-mgmt-pip')]",
     "mgmtPublicIPAddressId": "[resourceId('Microsoft.Network/publicIPAddresses', variables('mgmtPublicIPAddressName'))]",
-    "mgmtNsgID": "[resourceId('Microsoft.Network/networkSecurityGroups/',concat(variables('dnsLabel'),'-mgmt-nsg'))]",
     "mgmtNicName": "[concat(variables('dnsLabel'), '-mgmt')]",
     "mgmtNicID": "[resourceId('Microsoft.Network/NetworkInterfaces', variables('mgmtNicName'))]",
     "mgmtSubnetId": "[concat(variables('vnetId'), '/subnets/', variables('mgmtSubnetName'))]",
@@ -593,8 +591,7 @@
       "apiVersion": "[variables('networkApiVersion')]",
       "dependsOn": [
         "[variables('vnetId')]",
-        "[variables('mgmtPublicIPAddressId')]",
-        "[variables('mgmtNsgID')]"
+        "[variables('mgmtPublicIPAddressId')]"
       ],
       "location": "[variables('location')]",
       "name": "[variables('mgmtNicName')]",
@@ -613,10 +610,7 @@
               }
             }
           }
-        ],
-        "networkSecurityGroup": {
-          "id": "[variables('mgmtNsgID')]"
-        }
+        ]
       },
       "tags": "[if(empty(variables('tagValues')), json('null'), variables('tagValues'))]",
       "type": "Microsoft.Network/networkInterfaces"
@@ -626,7 +620,6 @@
       "dependsOn": [
         "[variables('vnetId')]",
         "extpipcopy",
-        "[variables('extNsgID')]",
         "[concat('Microsoft.Network/publicIPAddresses/', variables('extSelfPublicIpAddressNamePrefix'), '0')]"
       ],
       "location": "[variables('location')]",
@@ -651,21 +644,14 @@
             },
             "name": "ipConfigurations"
           }
-        ],
-        "networkSecurityGroup": {
-          "id": "[concat(variables('extNsgID'))]"
-        }
+        ]
       },
       "tags": "[if(empty(variables('tagValues')), json('null'), variables('tagValues'))]",
       "type": "Microsoft.Network/networkInterfaces"
     },
     {
       "apiVersion": "[variables('networkApiVersion')]",
-      "dependsOn": [
-        "[variables('vnetId')]",
-        "extpipcopy",
-        "[variables('extNsgID')]"
-      ],
+      "dependsOn": ["[variables('vnetId')]", "extpipcopy"],
       "location": "[variables('location')]",
       "name": "[variables('intNicName')]",
       "properties": {
